@@ -11,7 +11,7 @@ import csv
 import math
 import networkx as nx
 from matplotlib.animation import FuncAnimation
-
+import threading
 # Global variables
 data = []
 sorting_history = []
@@ -1134,63 +1134,40 @@ class AlgorithmVisualizer:
         return self._count_nodes(root.left) + self._count_nodes(root.right) + 1
 
     # Algorithm execution methods
+     
+
     def run_sorting_algorithm(self, algorithm, name):
-        """Run a sorting algorithm with timing"""
         if not self.data:
             messagebox.showwarning("No Data", "Please generate data first.")
             return
-        
-        self.sort_status.config(text=f"Running {name}...")
-        self.root.update()
-        
-        data_copy = self.data.copy()
-        start_time = time.time()
-        algorithm(data_copy, self.draw_sort_data, self.sort_speed.get())
-        end_time = time.time()
-        
-        execution_times[name] = end_time - start_time
-        self.data = data_copy
-        self.update_array_display(self.data)
-        self.sort_status.config(text=f"{name} completed in {end_time - start_time:.4f} seconds")
-        
-        # Save to history
-        self.save_to_sort_history(name, self.data.copy(), end_time - start_time)
 
-    def run_search_algorithm(self, algorithm, name):
-        """Run a search algorithm"""
-        if not self.search_array:
-            messagebox.showwarning("No Data", "Please generate search data first.")
-            return
-        
-        target_str = self.search_target_entry.get().strip()
-        if not target_str:
-            messagebox.showwarning("No Target", "Please enter a target value.")
-            return
-        
-        try:
-            target = int(target_str)
-        except ValueError:
-            messagebox.showerror("Invalid Target", "Please enter a valid integer.")
-            return
-        
-        self.search_status.config(text=f"Running {name}...")
-        self.root.update()
-        
-        start_time = time.time()
-        result = algorithm(self.search_array, target, self.draw_search_data, 0.5)
-        end_time = time.time()
-        
-        # Save to search history
-        search_entry = {
-            "algorithm": name,
-            "array": self.search_array.copy(),
-            "target": target,
-            "result": result,
-            "time": end_time - start_time,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        search_history.append(search_entry)
-        self.save_search_history()
+        # Thread-safe drawing wrapper
+        def safe_draw(data, colorArray):
+            self.root.after(0, lambda: self.draw_sort_data(data, colorArray))
+
+        def sort_thread():
+            self.root.after(0, lambda: self.sort_status.config(text=f"Running {name}..."))
+
+            data_copy = self.data.copy()
+            start_time = time.time()
+
+            # Use thread-safe draw wrapper
+            algorithm(data_copy, safe_draw, self.sort_speed.get())
+
+            end_time = time.time()
+            execution_times[name] = end_time - start_time
+
+            # MAIN THREAD UI updates
+            self.root.after(0, lambda: setattr(self, "data", data_copy))
+            self.root.after(0, lambda: self.update_array_display(data_copy))
+            self.root.after(0, lambda: self.sort_status.config(
+                text=f"{name} completed in {end_time - start_time:.4f} seconds"
+            ))
+            self.root.after(0, lambda: self.save_to_sort_history(
+                name, data_copy.copy(), end_time - start_time
+            ))
+
+        threading.Thread(target=sort_thread, daemon=True).start()
 
     # History and data management
     def save_to_sort_history(self, algorithm, data, execution_time):
