@@ -284,3 +284,353 @@ class AlgorithmVisualizer:
                        activeforeground=THEME["bg"],
                        cursor="hand2")
         return btn
+    def setup_tree_tab(self):
+        """Setup the tree operations tab - monochrome design"""
+        main_frame = tk.Frame(self.tree_tab, bg=THEME["bg"])
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Visualization area
+        viz_frame = tk.Frame(main_frame, bg=THEME["bg"], relief=tk.SOLID, bd=2, highlightbackground=THEME["border"], highlightthickness=2)
+        viz_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(20, 10))
+        
+        # Create matplotlib figure for tree
+        self.tree_fig, self.tree_ax = plt.subplots(figsize=(12, 8))
+        self.tree_fig.patch.set_facecolor(THEME["canvas_bg"])
+        self.tree_ax.set_facecolor(THEME["canvas_bg"])
+        self.tree_ax.set_aspect('equal')
+        self.tree_ax.axis('off')
+        
+        self.tree_canvas = FigureCanvasTkAgg(self.tree_fig, viz_frame)
+        self.tree_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+        # Controls
+        controls_frame = tk.Frame(main_frame, bg=THEME["bg"])
+        controls_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Tree operations
+        tree_ops_section = tk.LabelFrame(controls_frame, text="TREE OPERATIONS", 
+                                       bg=THEME["bg"], fg=THEME["fg"], 
+                                       font=("Courier", 10, "bold"),
+                                       relief=tk.SOLID, bd=2)
+        tree_ops_section.pack(side=tk.LEFT, padx=(0, 10), fill=tk.Y)
+        
+        tk.Label(tree_ops_section, text="Value:", bg=THEME["bg"], fg=THEME["fg"], font=("Courier", 9)).grid(row=0, column=0, padx=5, pady=5)
+        self.tree_value_entry = tk.Entry(tree_ops_section, width=15, bg=THEME["bg"], 
+                                       fg=THEME["fg"], font=("Courier", 9), 
+                                       relief=tk.SOLID, bd=2)
+        self.tree_value_entry.grid(row=0, column=1, padx=5, pady=5)
+        
+        tree_buttons = [
+            ("INSERT", self.insert_node),
+            ("DELETE", self.delete_node),
+            ("SEARCH", self.search_tree),
+            ("CLEAR", self.clear_tree)
+        ]
+        
+        for i, (text, command) in enumerate(tree_buttons):
+            self.create_rect_button(tree_ops_section, text, command, 8).grid(row=1, column=i, padx=3, pady=5)
+        
+        # Traversal operations
+        traversal_section = tk.LabelFrame(controls_frame, text="TRAVERSALS", 
+                                        bg=THEME["bg"], fg=THEME["fg"], 
+                                        font=("Courier", 10, "bold"),
+                                        relief=tk.SOLID, bd=2)
+        traversal_section.pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        
+        traversal_buttons = [
+            ("INORDER", lambda: self.traverse_tree("inorder")),
+            ("PREORDER", lambda: self.traverse_tree("preorder")),
+            ("POSTORDER", lambda: self.traverse_tree("postorder")),
+            ("LEVEL", lambda: self.traverse_tree("level_order"))
+        ]
+        
+        for i, (text, command) in enumerate(traversal_buttons):
+            self.create_rect_button(traversal_section, text, command, 10).grid(row=i//2, column=i%2, padx=3, pady=3)
+        
+        # Tree info
+        info_section = tk.LabelFrame(controls_frame, text="TREE INFO", 
+                                   bg=THEME["bg"], fg=THEME["fg"], 
+                                   font=("Courier", 10, "bold"),
+                                   relief=tk.SOLID, bd=2)
+        info_section.pack(side=tk.RIGHT, padx=(10, 0), fill=tk.Y)
+        
+        self.tree_info_text = tk.Text(info_section, width=30, height=4, bg=THEME["bg"], 
+                                    fg=THEME["fg"], font=("Courier", 8), 
+                                    relief=tk.SOLID, bd=1)
+        self.tree_info_text.pack(padx=5, pady=5)
+        
+        # Status
+        self.tree_status = tk.Label(main_frame, text="READY", bg=THEME["bg"], 
+                                  fg=THEME["fg"], font=("Courier", 9, "bold"), 
+                                  relief=tk.SOLID, bd=2, anchor='w', padx=10)
+        self.tree_status.pack(fill=tk.X, padx=20, pady=(0, 20))
+
+    def setup_analysis_tab(self):
+        """Setup the performance analysis tab - monochrome design"""
+        main_frame = tk.Frame(self.analysis_tab, bg=THEME["bg"])
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Analysis visualization
+        viz_frame = tk.Frame(main_frame, bg=THEME["bg"], relief=tk.SOLID, bd=2, highlightbackground=THEME["border"], highlightthickness=2)
+        viz_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(20, 10))
+        
+        self.analysis_fig, (self.time_ax, self.space_ax) = plt.subplots(1, 2, figsize=(14, 6))
+        self.analysis_fig.patch.set_facecolor(THEME["canvas_bg"])
+        
+        for ax in [self.time_ax, self.space_ax]:
+            ax.set_facecolor(THEME["canvas_bg"])
+            ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
+            ax.minorticks_on()
+            ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
+            ax.tick_params(colors=THEME["fg"], which='both')
+            for spine in ax.spines.values():
+                spine.set_color(THEME["border"])
+                spine.set_linewidth(2)
+        
+        self.analysis_canvas = FigureCanvasTkAgg(self.analysis_fig, viz_frame)
+        self.analysis_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+        # Controls
+        controls_frame = tk.Frame(main_frame, bg=THEME["bg"])
+        controls_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Analysis buttons
+        analysis_section = tk.LabelFrame(controls_frame, text="PERFORMANCE ANALYSIS", 
+                                       bg=THEME["bg"], fg=THEME["fg"], 
+                                       font=("Courier", 10, "bold"),
+                                       relief=tk.SOLID, bd=2)
+        analysis_section.pack(side=tk.LEFT, padx=(0, 10))
+        
+        analysis_buttons = [
+            ("COMPARE SORT", self.compare_sorting_algorithms),
+            ("COMPARE SEARCH", self.compare_search_algorithms),
+            ("BIG O", self.show_complexity_analysis),
+            ("EXPORT", self.export_analysis)
+        ]
+        
+        for i, (text, command) in enumerate(analysis_buttons):
+            self.create_rect_button(analysis_section, text, command, 14).grid(row=i//2, column=i%2, padx=3, pady=3)
+        
+        # History section
+        history_section = tk.LabelFrame(controls_frame, text="HISTORY", 
+                                      bg=THEME["bg"], fg=THEME["fg"], 
+                                      font=("Courier", 10, "bold"),
+                                      relief=tk.SOLID, bd=2)
+        history_section.pack(side=tk.RIGHT, padx=(10, 0))
+        
+        history_buttons = [
+            ("SORT HISTORY", self.view_sort_history),
+            ("SEARCH HISTORY", self.view_search_history),
+            ("CLEAR ALL", self.clear_all_history)
+        ]
+        
+        for i, (text, command) in enumerate(history_buttons):
+            self.create_rect_button(history_section, text, command, 14).grid(row=i//2, column=i%2, padx=3, pady=3)
+
+    # Data generation and management methods
+    def generate_sort_data(self):
+        """Generate random data for sorting visualization"""
+        user_input = self.sort_entry.get().strip()
+        if user_input:
+            try:
+                self.data = list(map(int, user_input.split(',')))
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter numbers separated by commas.")
+                return
+        else:
+            size = random.randint(10, 30)
+            self.data = [random.randint(1, 100) for _ in range(size)]
+            self.sort_entry.delete(0, tk.END)
+            self.sort_entry.insert(0, ','.join(map(str, self.data)))
+        
+        self.draw_sort_data(self.data, [THEME["fg"]] * len(self.data))
+        self.update_array_display(self.data)
+        self.sort_status.config(text=f"GENERATED {len(self.data)} ELEMENTS")
+
+    def generate_search_data(self):
+        """Generate sorted data for search algorithms"""
+        user_input = self.search_array_entry.get().strip()
+        if user_input:
+            try:
+                self.search_array = sorted(list(map(int, user_input.split(','))))
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter numbers separated by commas.")
+                return
+        else:
+            size = random.randint(15, 25)
+            self.search_array = sorted([random.randint(1, 100) for _ in range(size)])
+            self.search_array_entry.delete(0, tk.END)
+            self.search_array_entry.insert(0, ','.join(map(str, self.search_array)))
+        
+        self.draw_search_data(self.search_array, [THEME["fg"]] * len(self.search_array))
+        self.search_status.config(text=f"GENERATED {len(self.search_array)} SORTED ELEMENTS")
+
+    def draw_sort_data(self, data, colors):
+        """Draw sorting visualization - monochrome bars"""
+        self.sort_ax.clear()
+        self.sort_ax.set_facecolor(THEME["canvas_bg"])
+        
+        # Add graph paper grid
+        self.sort_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
+        self.sort_ax.minorticks_on()
+        self.sort_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
+        
+        bars = self.sort_ax.bar(range(len(data)), data, color=THEME["bg"], 
+                               edgecolor=THEME["border"], linewidth=2)
+        
+        # Fill highlighted bars
+        for i, (bar, color) in enumerate(zip(bars, colors)):
+            if color == THEME["fg"]:
+                bar.set_facecolor(THEME["fg"])
+        
+        self.sort_ax.set_title("SORTING VISUALIZATION", color=THEME["fg"], 
+                             fontsize=12, fontweight='bold', family='Courier')
+        self.sort_ax.set_xlabel("INDEX", color=THEME["fg"], family='Courier', fontsize=10)
+        self.sort_ax.set_ylabel("VALUE", color=THEME["fg"], family='Courier', fontsize=10)
+        
+        for spine in self.sort_ax.spines.values():
+            spine.set_color(THEME["border"])
+            spine.set_linewidth(2)
+        
+        self.sort_canvas.draw()
+        try:
+            self.root.update_idletasks()
+            self.root.update()
+        except tk.TclError:
+            pass
+
+    def draw_search_data(self, data, colors, highlight_indices=None):
+        """Draw search visualization - monochrome bars"""
+        self.search_ax.clear()
+        self.search_ax.set_facecolor(THEME["canvas_bg"])
+        
+        # Add graph paper grid
+        self.search_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
+        self.search_ax.minorticks_on()
+        self.search_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
+        
+        bars = self.search_ax.bar(range(len(data)), data, color=THEME["bg"], 
+                                 edgecolor=THEME["border"], linewidth=2)
+        
+        # Highlight specific indices with solid black fill
+        if highlight_indices:
+            for idx in highlight_indices:
+                if 0 <= idx < len(data):
+                    bars[idx].set_facecolor(THEME["fg"])
+                    bars[idx].set_edgecolor(THEME["border"])
+                    bars[idx].set_linewidth(3)
+        
+        self.search_ax.set_title("SEARCH VISUALIZATION", color=THEME["fg"], 
+                               fontsize=12, fontweight='bold', family='Courier')
+        self.search_ax.set_xlabel("INDEX", color=THEME["fg"], family='Courier', fontsize=10)
+        self.search_ax.set_ylabel("VALUE", color=THEME["fg"], family='Courier', fontsize=10)
+        
+        # Add index labels
+        self.search_ax.set_xticks(range(len(data)))
+        self.search_ax.set_xticklabels(range(len(data)), family='Courier')
+        
+        for spine in self.search_ax.spines.values():
+            spine.set_color(THEME["border"])
+            spine.set_linewidth(2)
+        
+        self.search_canvas.draw()
+        try:
+            self.root.update_idletasks()
+            self.root.update()
+        except tk.TclError:
+           pass
+
+    def update_array_display(self, data):
+        """Update the array display below the chart"""
+        # Clear existing labels
+        for widget in self.array_frame.winfo_children():
+            widget.destroy()
+        
+        # Create scrollable frame if data is large
+        if len(data) > 20:
+            canvas = tk.Canvas(self.array_frame, bg=THEME["bg"], height=50, highlightthickness=0)
+            scrollbar = ttk.Scrollbar(self.array_frame, orient="horizontal", command=canvas.xview)
+            scrollable_frame = tk.Frame(canvas, bg=THEME["bg"])
+            
+            canvas.configure(xscrollcommand=scrollbar.set)
+            canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            
+            canvas.pack(side="top", fill="both", expand=True)
+            scrollbar.pack(side="bottom", fill="x")
+            
+            parent = scrollable_frame
+        else:
+            parent = self.array_frame
+        
+        # Display array elements in monochrome boxes
+        for i, val in enumerate(data):
+            label = tk.Label(parent, text=str(val), width=4, height=2,
+                           bg=THEME["bg"], fg=THEME["fg"],
+                           relief="solid", bd=2, font=("Courier", 10, "bold"))
+            label.pack(side="left", padx=3, pady=5)
+
+    # Sorting algorithms with enhanced visualization
+    def bubble_sort(self, data, draw_func, speed):
+        """Bubble sort with monochrome visualization"""
+        n = len(data)
+        
+        for i in range(n):
+            for j in range(0, n - i - 1):
+                # Highlight comparing elements (outline only)
+                colors = [THEME["bg"] if x == j or x == j+1 else THEME["fg"] for x in range(n)]
+                draw_func(data, colors)
+                time.sleep(speed)
+                
+                if data[j] > data[j + 1]:
+                    data[j], data[j + 1] = data[j + 1], data[j]
+                    # Highlight swapped elements (solid black)
+                    colors = [THEME["fg"] if x == j or x == j+1 else THEME["bg"] for x in range(n)]
+                    draw_func(data, colors)
+                    time.sleep(speed)
+        
+        # Show final sorted array (all black)
+        draw_func(data, [THEME["fg"]] * n)
+
+    def selection_sort(self, data, draw_func, speed):
+        """Selection sort with monochrome visualization"""
+        n = len(data)
+        
+        for i in range(n):
+            min_idx = i
+            for j in range(i+1, n):
+                colors = [THEME["fg"] if x < i else THEME["bg"] if x == j or x == min_idx else THEME["bg"] for x in range(n)]
+                draw_func(data, colors)
+                time.sleep(speed)
+                
+                if data[j] < data[min_idx]:
+                    min_idx = j
+            
+            data[i], data[min_idx] = data[min_idx], data[i]
+            colors = [THEME["fg"] if x <= i else THEME["bg"] if x == min_idx else THEME["bg"] for x in range(n)]
+            draw_func(data, colors)
+            time.sleep(speed)
+        
+        draw_func(data, [THEME["fg"]] * n)
+
+    def insertion_sort(self, data, draw_func, speed):
+        """Insertion sort with monochrome visualization"""
+        for i in range(1, len(data)):
+            key = data[i]
+            j = i - 1
+            
+            colors = [THEME["fg"] if x < i else THEME["bg"] if x == i else THEME["bg"] for x in range(len(data))]
+            draw_func(data, colors)
+            time.sleep(speed)
+            
+            while j >= 0 and data[j] > key:
+                colors = [THEME["fg"] if x < i else THEME["bg"] if x == j or x == j+1 else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors)
+                time.sleep(speed)
+                
+                data[j + 1] = data[j]
+                j -= 1
+            
+            data[j + 1] = key
+        
+        draw_func(data, [THEME["fg"]] * len(data))
