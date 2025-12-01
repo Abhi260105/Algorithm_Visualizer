@@ -284,6 +284,25 @@ class AlgorithmVisualizer:
                        activeforeground=THEME["bg"],
                        cursor="hand2")
         return btn
+    def generate_sort_data(self):
+        """Generate random data for sorting visualization"""
+        user_input = self.sort_entry.get().strip()
+        if user_input:
+            try:
+                self.data = list(map(int, user_input.split(',')))
+            except ValueError:
+                messagebox.showerror("Invalid Input", "Please enter numbers separated by commas.")
+                return
+        else:
+            size = random.randint(10, 30)
+            self.data = [random.randint(1, 100) for _ in range(size)]
+            self.sort_entry.delete(0, tk.END)
+            self.sort_entry.insert(0, ','.join(map(str, self.data)))
+        
+        self.draw_sort_data(self.data, [THEME["fg"]] * len(self.data))
+        self.update_array_display(self.data)
+        self.sort_status.config(text=f"GENERATED {len(self.data)} ELEMENTS")
+
     def setup_tree_tab(self):
         """Setup the tree operations tab - monochrome design"""
         main_frame = tk.Frame(self.tree_tab, bg=THEME["bg"])
@@ -428,8 +447,6 @@ class AlgorithmVisualizer:
             self.create_rect_button(history_section, text, command, 14).grid(row=i//2, column=i%2, padx=3, pady=3)
 
     # Data generation and management methods
-    def generate_sort_data(self):
-        """Generate random data for sorting visualization"""
         user_input = self.sort_entry.get().strip()
         if user_input:
             try:
@@ -634,7 +651,7 @@ class AlgorithmVisualizer:
             data[j + 1] = key
         
         draw_func(data, [THEME["fg"]] * len(data))
-def merge_sort(self, data, draw_func, speed):
+    def merge_sort(self, data, draw_func, speed):
         """Merge sort with monochrome visualization"""
         def merge_sort_helper(arr, l, r, depth=0):
             if l < r:
@@ -984,6 +1001,7 @@ def merge_sort(self, data, draw_func, speed):
         except ValueError:
             messagebox.showerror("Invalid Input", "Please enter a valid integer.")
 
+
     def _search_recursive(self, root, value):
         """Recursive helper for searching nodes"""
         if root is None or root.value == value:
@@ -1052,7 +1070,7 @@ def merge_sort(self, data, draw_func, speed):
             self.tree_ax.add_patch(rect)
             self.tree_ax.text(x, y, str(node.value), ha='center', va='center', 
                             color=THEME["fg"], fontsize=11, fontweight='bold', family='Courier')
-def traverse_tree(self, traversal_type):
+    def traverse_tree(self, traversal_type):
         """Perform tree traversal"""
         if self.binary_tree is None:
             self.tree_status.config(text="TREE IS EMPTY")
@@ -1348,7 +1366,6 @@ def traverse_tree(self, traversal_type):
         
         self.analysis_fig.tight_layout()
         self.analysis_canvas.draw()
-
     def compare_search_algorithms(self):
         """Compare search algorithm performance - monochrome charts"""
         if not search_history:
@@ -1425,87 +1442,87 @@ def traverse_tree(self, traversal_type):
         complexity_text.pack(fill=tk.BOTH, expand=True)
         
         complexity_info = """
-╔══════════════════════════════════════════════════════════════════╗
-║            ALGORITHM COMPLEXITY ANALYSIS                         ║
-╚══════════════════════════════════════════════════════════════════╝
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║            ALGORITHM COMPLEXITY ANALYSIS                         ║
+    ╚══════════════════════════════════════════════════════════════════╝
 
-SORTING ALGORITHMS:
-──────────────────────────────────────────────────────────────────
+    SORTING ALGORITHMS:
+    ──────────────────────────────────────────────────────────────────
 
-BUBBLE SORT:
-  Time: O(n²) worst/average, O(n) best
-  Space: O(1)
-  Stable: Yes
+    BUBBLE SORT:
+      Time: O(n²) worst/average, O(n) best
+      Space: O(1)
+      Stable: Yes
 
-SELECTION SORT:
-  Time: O(n²) all cases
-  Space: O(1)
-  Stable: No
+    SELECTION SORT:
+      Time: O(n²) all cases
+      Space: O(1)
+      Stable: No
 
-INSERTION SORT:
-  Time: O(n²) worst/average, O(n) best
-  Space: O(1)
-  Stable: Yes
+    INSERTION SORT:
+      Time: O(n²) worst/average, O(n) best
+      Space: O(1)
+      Stable: Yes
 
-MERGE SORT:
-  Time: O(n log n) all cases
-  Space: O(n)
-  Stable: Yes
+    MERGE SORT:
+      Time: O(n log n) all cases
+      Space: O(n)
+      Stable: Yes
 
-QUICK SORT:
-  Time: O(n²) worst, O(n log n) average/best
-  Space: O(log n) average
-  Stable: No
+    QUICK SORT:
+      Time: O(n²) worst, O(n log n) average/best
+      Space: O(log n) average
+      Stable: No
 
-HEAP SORT:
-  Time: O(n log n) all cases
-  Space: O(1)
-  Stable: No
+    HEAP SORT:
+      Time: O(n log n) all cases
+      Space: O(1)
+      Stable: No
 
-RADIX SORT:
-  Time: O(d×(n+k))
-  Space: O(n+k)
-  Stable: Yes
+    RADIX SORT:
+      Time: O(d×(n+k))
+      Space: O(n+k)
+      Stable: Yes
 
-SEARCH ALGORITHMS:
-──────────────────────────────────────────────────────────────────
+    SEARCH ALGORITHMS:
+    ──────────────────────────────────────────────────────────────────
 
-LINEAR SEARCH:
-  Time: O(n)
-  Space: O(1)
-  Works on: Any array
+    LINEAR SEARCH:
+      Time: O(n)
+      Space: O(1)
+      Works on: Any array
 
-BINARY SEARCH:
-  Time: O(log n)
-  Space: O(1) iterative
-  Works on: Sorted arrays only
+    BINARY SEARCH:
+      Time: O(log n)
+      Space: O(1) iterative
+      Works on: Sorted arrays only
 
-JUMP SEARCH:
-  Time: O(√n)
-  Space: O(1)
-  Works on: Sorted arrays
+    JUMP SEARCH:
+      Time: O(√n)
+      Space: O(1)
+      Works on: Sorted arrays
 
-INTERPOLATION SEARCH:
-  Time: O(log log n) best, O(n) worst
-  Space: O(1)
-  Works on: Uniformly distributed sorted arrays
+    INTERPOLATION SEARCH:
+      Time: O(log log n) best, O(n) worst
+      Space: O(1)
+      Works on: Uniformly distributed sorted arrays
 
-TREE OPERATIONS:
-──────────────────────────────────────────────────────────────────
+    TREE OPERATIONS:
+    ──────────────────────────────────────────────────────────────────
 
-BINARY SEARCH TREE:
-  Search: O(log n) average, O(n) worst
-  Insert: O(log n) average, O(n) worst
-  Delete: O(log n) average, O(n) worst
-  Space: O(n)
+    BINARY SEARCH TREE:
+      Search: O(log n) average, O(n) worst
+      Insert: O(log n) average, O(n) worst
+      Delete: O(log n) average, O(n) worst
+      Space: O(n)
 
-TRAVERSALS:
-  All: O(n) time, O(h) space (h = height)
-  - Inorder: Left → Root → Right
-  - Preorder: Root → Left → Right  
-  - Postorder: Left → Right → Root
-  - Level Order: Breadth-first
-"""
+    TRAVERSALS:
+      All: O(n) time, O(h) space (h = height)
+      - Inorder: Left → Root → Right
+      - Preorder: Root → Left → Right  
+      - Postorder: Left → Right → Root
+      - Level Order: Breadth-first
+    """
         
         complexity_text.insert(tk.END, complexity_info)
         complexity_text.config(state=tk.DISABLED)
@@ -1673,7 +1690,7 @@ TRAVERSALS:
         
         self.sort_status.config(text="RESET COMPLETED")
 
-# Main execution
+    # Main execution
 def main():
     root = tk.Tk()
     app = AlgorithmVisualizer(root)
