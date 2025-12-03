@@ -945,17 +945,367 @@ class AlgorithmVisualizer:
                 root.right = TreeNode(value)
             else:
                 self._insert_recursive(root.right, value)
+def delete_node(self):
+        """Delete a node from the binary search tree"""
+        try:
+            value = int(self.tree_value_entry.get())
+            self.binary_tree = self._delete_recursive(self.binary_tree, value)
+            self.draw_tree()
+            self.update_tree_info()
+            self.tree_status.config(text=f"DELETED {value}")
+            self.tree_value_entry.delete(0, tk.END)
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid integer.")
+
+def _delete_recursive(self, root, value):
+        """Recursive helper for deleting nodes"""
+        if root is None:
+            return root
+        
+        if value < root.value:
+            root.left = self._delete_recursive(root.left, value)
+        elif value > root.value:
+            root.right = self._delete_recursive(root.right, value)
+        else:
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+            
+            temp = self._find_min(root.right)
+            root.value = temp.value
+            root.right = self._delete_recursive(root.right, temp.value)
+        
+        return root
+
+def _find_min(self, root):
+        """Find minimum value node in tree"""
+        while root.left is not None:
+            root = root.left
+        return root
+
+def search_tree(self):
+        """Search for a value in the tree"""
+        try:
+            value = int(self.tree_value_entry.get())
+            found = self._search_recursive(self.binary_tree, value)
+            if found:
+                self.tree_status.config(text=f"✓ FOUND {value} IN TREE")
+            else:
+                self.tree_status.config(text=f"✗ {value} NOT FOUND IN TREE")
+            self.tree_value_entry.delete(0, tk.END)
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid integer.")
+
+def _search_recursive(self, root, value):
+        """Recursive helper for searching nodes"""
+        if root is None or root.value == value:
+            return root is not None
+        
+        if value < root.value:
+            return self._search_recursive(root.left, value)
+        return self._search_recursive(root.right, value)
+
+def clear_tree(self):
+        """Clear the entire tree"""
+        self.binary_tree = None
+        self.draw_tree()
+        self.update_tree_info()
+        self.tree_status.config(text="TREE CLEARED")
+
+def draw_tree(self):
+        """Draw the binary tree"""
+        self.tree_ax.clear()
+        self.tree_ax.set_facecolor(THEME["canvas_bg"])
+        self.tree_ax.set_aspect('equal')
+        self.tree_ax.axis('off')
+        
+        if self.binary_tree is None:
+            self.tree_ax.text(0.5, 0.5, "EMPTY TREE", ha='center', va='center', 
+                            transform=self.tree_ax.transAxes, color=THEME["fg"], 
+                            fontsize=14, family='Courier', fontweight='bold')
+        else:
+            positions = {}
+            self._calculate_positions(self.binary_tree, 0, 0, 4, positions)
+            self._draw_edges(self.binary_tree, positions)
+            self._draw_nodes(positions)
+        
+        self.tree_canvas.draw()
+
+def _calculate_positions(self, node, x, y, width, positions):
+        """Calculate positions for tree nodes"""
+        if node is not None:
+            positions[node] = (x, y)
+            if node.left:
+                self._calculate_positions(node.left, x - width, y - 1, width / 2, positions)
+            if node.right:
+                self._calculate_positions(node.right, x + width, y - 1, width / 2, positions)
+
+def _draw_edges(self, node, positions):
+        """Draw edges between tree nodes"""
+        if node is not None:
+            x, y = positions[node]
+            if node.left:
+                left_x, left_y = positions[node.left]
+                self.tree_ax.plot([x, left_x], [y, left_y], '-', color=THEME["border"], 
+                                linewidth=2, markersize=0)
+                self._draw_edges(node.left, positions)
+            if node.right:
+                right_x, right_y = positions[node.right]
+                self.tree_ax.plot([x, right_x], [y, right_y], '-', color=THEME["border"], 
+                                linewidth=2, markersize=0)
+                self._draw_edges(node.right, positions)
+
+def _draw_nodes(self, positions):
+        """Draw tree nodes"""
+        for node, (x, y) in positions.items():
+            rect = Rectangle((x - 0.25, y - 0.15), 0.5, 0.3, 
+                           facecolor=THEME["bg"], 
+                           edgecolor=THEME["border"], 
+                           linewidth=2)
+            self.tree_ax.add_patch(rect)
+            self.tree_ax.text(x, y, str(node.value), ha='center', va='center', 
+                            color=THEME["fg"], fontsize=11, fontweight='bold', family='Courier')
+
+def traverse_tree(self, traversal_type):
+        """Perform tree traversal"""
+        if self.binary_tree is None:
+            self.tree_status.config(text="TREE IS EMPTY")
+            return
+        
+        result = []
+        
+        if traversal_type == "inorder":
+            self._inorder_traversal(self.binary_tree, result)
+        elif traversal_type == "preorder":
+            self._preorder_traversal(self.binary_tree, result)
+        elif traversal_type == "postorder":
+            self._postorder_traversal(self.binary_tree, result)
+        elif traversal_type == "level_order":
+            self._level_order_traversal(self.binary_tree, result)
+        
+        self.tree_info_text.delete(1.0, tk.END)
+        self.tree_info_text.insert(tk.END, f"{traversal_type.upper()}: {' -> '.join(map(str, result))}")
+        self.tree_status.config(text=f"{traversal_type.upper()} COMPLETED")
+
+def _inorder_traversal(self, root, result):
+        if root:
+            self._inorder_traversal(root.left, result)
+            result.append(root.value)
+            self._inorder_traversal(root.right, result)
+
+def _preorder_traversal(self, root, result):
+        if root:
+            result.append(root.value)
+            self._preorder_traversal(root.left, result)
+            self._preorder_traversal(root.right, result)
+
+def _postorder_traversal(self, root, result):
+        if root:
+            self._postorder_traversal(root.left, result)
+            self._postorder_traversal(root.right, result)
+            result.append(root.value)
+
+def _level_order_traversal(self, root, result):
+        if root:
+            queue = [root]
+            while queue:
+                node = queue.pop(0)
+                result.append(node.value)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+
+def update_tree_info(self):
+        """Update tree information display"""
+        if self.binary_tree is None:
+            info = "TREE: EMPTY\nHEIGHT: 0\nNODES: 0"
+        else:
+            height = self._get_tree_height(self.binary_tree)
+            node_count = self._count_nodes(self.binary_tree)
+            info = f"TREE: BINARY SEARCH TREE\nHEIGHT: {height}\nNODES: {node_count}"
+        
+        self.tree_info_text.delete(1.0, tk.END)
+        self.tree_info_text.insert(tk.END, info)
+
+def _get_tree_height(self, root):
+        """Get height of tree"""
+        if root is None:
+            return 0
+        return max(self._get_tree_height(root.left), self._get_tree_height(root.right)) + 1
+
+def _count_nodes(self, root):
+        """Count nodes in tree"""
+        if root is None:
+            return 0
+        return self._count_nodes(root.left) + self._count_nodes(root.right) + 1
+
+    # Algorithm execution methods
+def run_sorting_algorithm(self, algorithm, name):
+        """Run a sorting algorithm with timing"""
+        if not self.data:
+            messagebox.showwarning("No Data", "Please generate data first.")
+            return
+        
+        self.sort_status.config(text=f"RUNNING {name.upper()}...")
+        self.sort_message.config(text="Starting...")
+        self.root.update()
+        
+        data_copy = self.data.copy()
+        start_time = time.time()
+        algorithm(data_copy, self.draw_sort_data, self.sort_speed.get())
+        end_time = time.time()
+        
+        execution_times[name] = end_time - start_time
+        self.data = data_copy
+        self.update_array_display(self.data)
+        self.sort_status.config(text=f"{name.upper()} COMPLETED IN {end_time - start_time:.4f}S")
+        
+        # Save to history
+        self.save_to_sort_history(name, self.data.copy(), end_time - start_time)
+
+def run_search_algorithm(self, algorithm, name):
+        """Run a search algorithm"""
+        if not self.search_array:
+            messagebox.showwarning("No Data", "Please generate search data first.")
+            return
+        
+        target_str = self.search_target_entry.get().strip()
+        if not target_str:
+            messagebox.showwarning("No Target", "Please enter a target value.")
+            return
+        
+        try:
+            target = int(target_str)
+        except ValueError:
+            messagebox.showerror("Invalid Target", "Please enter a valid integer.")
+            return
+        
+        self.search_status.config(text=f"RUNNING {name.upper()}...")
+        self.search_message.config(text="Starting search...")
+        self.root.update()
+        
+        start_time = time.time()
+        result = algorithm(self.search_array, target, self.draw_search_data, 0.5)
+        end_time = time.time()
+        
+        # Save to search history
+        search_entry = {
+            "algorithm": name,
+            "array": self.search_array.copy(),
+            "target": target,
+            "result": result,
+            "time": end_time - start_time,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        search_history.append(search_entry)
+        self.save_search_history()
+
+    # Analysis tab setup
+def setup_analysis_tab(self):
+        """Setup the performance analysis tab"""
+        main_frame = tk.Frame(self.analysis_tab, bg=THEME["bg"])
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Analysis visualization
+        viz_frame = tk.Frame(main_frame, bg=THEME["bg"], relief=tk.SOLID, bd=2, 
+                           highlightbackground=THEME["border"], highlightthickness=2)
+        viz_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(20, 10))
+        
+        self.analysis_fig, (self.time_ax, self.space_ax) = plt.subplots(1, 2, figsize=(14, 6))
+        self.analysis_fig.patch.set_facecolor(THEME["canvas_bg"])
+        
+        for ax in [self.time_ax, self.space_ax]:
+            ax.set_facecolor(THEME["canvas_bg"])
+            ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
+            ax.minorticks_on()
+            ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
+            ax.tick_params(colors=THEME["fg"], which='both')
+            for spine in ax.spines.values():
+                spine.set_color(THEME["border"])
+                spine.set_linewidth(2)
+        
+        self.analysis_canvas = FigureCanvasTkAgg(self.analysis_fig, viz_frame)
+        self.analysis_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+        # Controls
+        controls_frame = tk.Frame(main_frame, bg=THEME["bg"])
+        controls_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Analysis buttons
+        analysis_section = tk.LabelFrame(controls_frame, text="PERFORMANCE ANALYSIS", 
+                                       bg=THEME["bg"], fg=THEME["fg"], 
+                                       font=("Courier", 10, "bold"),
+                                       relief=tk.SOLID, bd=2)
+        analysis_section.pack(side=tk.LEFT, padx=(0, 10))
+        
+        analysis_buttons = [
+            ("COMPARE SORT", self.compare_sorting_algorithms),
+            ("COMPARE SEARCH", self.compare_search_algorithms),
+            ("BIG O", self.show_complexity_analysis),
+            ("EXPORT", self.export_analysis)
+        ]
+        
+        for i, (text, command) in enumerate(analysis_buttons):
+            self.create_enhanced_button(analysis_section, text, command, 14).grid(
+                row=i//2, column=i%2, padx=3, pady=3)
+        
+        # History section
+        history_section = tk.LabelFrame(controls_frame, text="HISTORY", 
+                                      bg=THEME["bg"], fg=THEME["fg"], 
+                                      font=("Courier", 10, "bold"),
+                                      relief=tk.SOLID, bd=2)
+        history_section.pack(side=tk.RIGHT, padx=(10, 0))
+        
+        history_buttons = [
+            ("SORT HISTORY", self.view_sort_history),
+            ("SEARCH HISTORY", self.view_search_history),
+            ("CLEAR ALL", self.clear_all_history)
+        ]
+        
+        for i, (text, command) in enumerate(history_buttons):
+            self.create_enhanced_button(history_section, text, command, 14).grid(
+                row=i//2, column=i%2, padx=3, pady=3)
+
+    # History and data management
+def save_to_sort_history(self, algorithm, data, execution_time):
+        """Save sorting result to history"""
+        entry = {
+            "algorithm": algorithm,
+            "data": data,
+            "time": execution_time,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        sorting_history.append(entry)
+        self.save_sort_history()
+
+def load_history(self):
+        """Load history from files"""
+        global sorting_history, search_history
+        try:
+            with open(HISTORY_FILE, "r") as file:
+                sorting_history = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            sorting_history = []
+        
+        try:
+            with open(SEARCH_HISTORY_FILE, "r") as file:
+                search_history = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            search_history = []
+
 def save_sort_history(self):
         """Save sorting history to file"""
         with open(HISTORY_FILE, "w") as file:
             json.dump(sorting_history, file, indent=4)
 
-    def save_search_history(self):
+def save_search_history(self):
         """Save search history to file"""
         with open(SEARCH_HISTORY_FILE, "w") as file:
             json.dump(search_history, file, indent=4)
 
-    def save_sorted_data(self):
+def save_sorted_data(self):
         """Save current sorted data"""
         if not self.data:
             messagebox.showwarning("No Data", "No data to save.")
@@ -985,7 +1335,7 @@ def save_sort_history(self):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to save data: {str(e)}")
 
-    def load_data_from_file(self):
+def load_data_from_file(self):
         """Load data from file"""
         filename = filedialog.askopenfilename(
             filetypes=[("CSV files", "*.csv"), ("JSON files", "*.json"), ("All files", "*.*")]
@@ -1012,7 +1362,7 @@ def save_sort_history(self):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load data: {str(e)}")
 
-    def compare_sorting_algorithms(self):
+def compare_sorting_algorithms(self):
         """Compare sorting algorithm performance"""
         if not execution_times:
             messagebox.showinfo("No Data", "Run some sorting algorithms first.")
@@ -1049,7 +1399,7 @@ def save_sort_history(self):
         self.analysis_fig.tight_layout()
         self.analysis_canvas.draw()
 
-    def compare_search_algorithms(self):
+def compare_search_algorithms(self):
         """Compare search algorithm performance"""
         if not search_history:
             messagebox.showinfo("No Data", "Run some search algorithms first.")
@@ -1084,7 +1434,7 @@ def save_sort_history(self):
         self.analysis_fig.tight_layout()
         self.analysis_canvas.draw()
 
-    def show_complexity_analysis(self):
+def show_complexity_analysis(self):
         """Show Big O complexity analysis"""
         complexity_window = tk.Toplevel(self.root)
         complexity_window.title("Algorithm Complexity")
@@ -1113,7 +1463,7 @@ def save_sort_history(self):
         complexity_text.insert(tk.END, complexity_info)
         complexity_text.config(state=tk.DISABLED)
 
-    def export_analysis(self):
+def export_analysis(self):
         """Export analysis results"""
         filename = filedialog.asksaveasfilename(
             defaultextension=".json",
@@ -1136,7 +1486,7 @@ def save_sort_history(self):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to export: {str(e)}")
 
-    def view_sort_history(self):
+def view_sort_history(self):
         """View sorting history"""
         if not sorting_history:
             messagebox.showinfo("No History", "No sorting history available.")
@@ -1144,7 +1494,7 @@ def save_sort_history(self):
         
         self._create_history_window("SORTING HISTORY", sorting_history, "sorting")
 
-    def view_search_history(self):
+def view_search_history(self):
         """View search history"""
         if not search_history:
             messagebox.showinfo("No History", "No search history available.")
@@ -1152,7 +1502,8 @@ def save_sort_history(self):
         
         self._create_history_window("SEARCH HISTORY", search_history, "search")
 
-    def _create_history_window(self, title, history_data, data_type):
+
+def _create_history_window(self, title, history_data, data_type):
         """Create history window"""
         history_window = tk.Toplevel(self.root)
         history_window.title(title)
@@ -1187,7 +1538,7 @@ def save_sort_history(self):
         tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-    def clear_all_history(self):
+def clear_all_history(self):
         """Clear all history"""
         if messagebox.askyesno("Confirm", "Clear all history?"):
             global sorting_history, search_history
@@ -1197,7 +1548,7 @@ def save_sort_history(self):
             self.save_search_history()
             messagebox.showinfo("Cleared", "All history cleared.")
 
-    def reset_sort_visualization(self):
+def reset_sort_visualization(self):
         """Reset sorting visualization"""
         global execution_times
         execution_times = {}
