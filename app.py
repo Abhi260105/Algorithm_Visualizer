@@ -478,3 +478,470 @@ class AlgorithmVisualizer:
                            bg=THEME["bg"], fg=THEME["fg"],
                            relief="solid", bd=2, font=("Courier", 10, "bold"))
             label.pack(side="left", padx=3, pady=5)
+# Sorting algorithms with enhanced animation
+    def bubble_sort(self, data, draw_func, speed):
+        """Bubble sort with colorful animation"""
+        n = len(data)
+        
+        for i in range(n):
+            for j in range(0, n - i - 1):
+                # Highlight comparing elements (orange)
+                colors = [THEME["sorted"] if x >= n-i else THEME["comparing"] if x == j or x == j+1 else THEME["bg"] for x in range(n)]
+                draw_func(data, colors, f"Comparing: {data[j]} vs {data[j+1]}")
+                time.sleep(speed)
+                
+                if data[j] > data[j + 1]:
+                    data[j], data[j + 1] = data[j + 1], data[j]
+                    # Highlight swapped elements (red-orange)
+                    colors = [THEME["sorted"] if x >= n-i else THEME["swapping"] if x == j or x == j+1 else THEME["bg"] for x in range(n)]
+                    draw_func(data, colors, f"Swapped: {data[j+1]} ↔ {data[j]}")
+                    time.sleep(speed)
+        
+        # Show final sorted array (all green)
+        draw_func(data, [THEME["sorted"]] * n, "✓ Sorting Complete!")
+
+    def selection_sort(self, data, draw_func, speed):
+        """Selection sort with colorful animation"""
+        n = len(data)
+        
+        for i in range(n):
+            min_idx = i
+            for j in range(i+1, n):
+                colors = [THEME["sorted"] if x < i else THEME["comparing"] if x == j or x == min_idx else THEME["bg"] for x in range(n)]
+                draw_func(data, colors, f"Finding min: checking {data[j]}")
+                time.sleep(speed)
+                
+                if data[j] < data[min_idx]:
+                    min_idx = j
+            
+            data[i], data[min_idx] = data[min_idx], data[i]
+            colors = [THEME["sorted"] if x <= i else THEME["swapping"] if x == min_idx else THEME["bg"] for x in range(n)]
+            draw_func(data, colors, f"Swapped: {data[i]} to position {i}")
+            time.sleep(speed)
+        
+        draw_func(data, [THEME["sorted"]] * n, "✓ Sorting Complete!")
+
+    def insertion_sort(self, data, draw_func, speed):
+        """Insertion sort with colorful animation"""
+        for i in range(1, len(data)):
+            key = data[i]
+            j = i - 1
+            
+            colors = [THEME["sorted"] if x < i else THEME["comparing"] if x == i else THEME["bg"] for x in range(len(data))]
+            draw_func(data, colors, f"Inserting: {key}")
+            time.sleep(speed)
+            
+            while j >= 0 and data[j] > key:
+                colors = [THEME["sorted"] if x < i else THEME["swapping"] if x == j or x == j+1 else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Shifting: {data[j]} right")
+                time.sleep(speed)
+                
+                data[j + 1] = data[j]
+                j -= 1
+            
+            data[j + 1] = key
+        
+        draw_func(data, [THEME["sorted"]] * len(data), "✓ Sorting Complete!")
+
+    def merge_sort(self, data, draw_func, speed):
+        """Merge sort with colorful animation"""
+        def merge_sort_helper(arr, l, r, depth=0):
+            if l < r:
+                m = (l + r) // 2
+                
+                # Highlight the section being divided (orange)
+                colors = [THEME["comparing"] if l <= x <= r else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Dividing: [{l}:{r}]")
+                time.sleep(speed)
+                
+                merge_sort_helper(arr, l, m, depth+1)
+                merge_sort_helper(arr, m + 1, r, depth+1)
+                merge(arr, l, m, r)
+                
+                # Highlight merged section (green)
+                colors = [THEME["sorted"] if l <= x <= r else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Merged: [{l}:{r}]")
+                time.sleep(speed)
+        
+        def merge(arr, l, m, r):
+            left = arr[l:m + 1]
+            right = arr[m + 1:r + 1]
+            i = j = 0
+            k = l
+            
+            while i < len(left) and j < len(right):
+                if left[i] <= right[j]:
+                    arr[k] = left[i]
+                    i += 1
+                else:
+                    arr[k] = right[j]
+                    j += 1
+                k += 1
+                
+                colors = [THEME["swapping"] if l <= x <= r else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Merging at position {k-1}")
+                time.sleep(speed * 0.5)
+            
+            while i < len(left):
+                arr[k] = left[i]
+                i += 1
+                k += 1
+            
+            while j < len(right):
+                arr[k] = right[j]
+                j += 1
+                k += 1
+        
+        merge_sort_helper(data, 0, len(data) - 1)
+        draw_func(data, [THEME["sorted"]] * len(data), "✓ Sorting Complete!")
+
+    def quick_sort(self, data, draw_func, speed):
+        """Quick sort with colorful animation"""
+        def partition(arr, low, high):
+            pivot = arr[high]
+            i = low - 1
+            
+            for j in range(low, high):
+                colors = [THEME["comparing"] if x == high else THEME["searching"] if x == j else THEME["sorted"] if low <= x <= i else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Pivot: {pivot}, checking {arr[j]}")
+                time.sleep(speed)
+                
+                if arr[j] <= pivot:
+                    i += 1
+                    arr[i], arr[j] = arr[j], arr[i]
+                    
+                    colors = [THEME["comparing"] if x == high else THEME["swapping"] if x == i or x == j else THEME["sorted"] if low <= x < i else THEME["bg"] for x in range(len(data))]
+                    draw_func(data, colors, f"Swapped: {arr[i]} ↔ {arr[j]}")
+                    time.sleep(speed)
+            
+            arr[i + 1], arr[high] = arr[high], arr[i + 1]
+            return i + 1
+        
+        def quick_sort_helper(arr, low, high):
+            if low < high:
+                pi = partition(arr, low, high)
+                quick_sort_helper(arr, low, pi - 1)
+                quick_sort_helper(arr, pi + 1, high)
+        
+        quick_sort_helper(data, 0, len(data) - 1)
+        draw_func(data, [THEME["sorted"]] * len(data), "✓ Sorting Complete!")
+
+    def heap_sort(self, data, draw_func, speed):
+        """Heap sort with colorful animation"""
+        def heapify(arr, n, i):
+            largest = i
+            l = 2 * i + 1
+            r = 2 * i + 2
+            
+            if l < n and arr[i] < arr[l]:
+                largest = l
+            
+            if r < n and arr[largest] < arr[r]:
+                largest = r
+            
+            if largest != i:
+                arr[i], arr[largest] = arr[largest], arr[i]
+                colors = [THEME["swapping"] if x == i or x == largest else THEME["comparing"] if x < n else THEME["bg"] for x in range(len(data))]
+                draw_func(data, colors, f"Heapify: swapping {arr[largest]} ↔ {arr[i]}")
+                time.sleep(speed)
+                heapify(arr, n, largest)
+        
+        n = len(data)
+        
+        # Build max heap
+        for i in range(n // 2 - 1, -1, -1):
+            heapify(data, n, i)
+        
+        # Extract elements one by one
+        for i in range(n-1, 0, -1):
+            data[i], data[0] = data[0], data[i]
+            colors = [THEME["swapping"] if x == 0 or x == i else THEME["sorted"] if x > i else THEME["bg"] for x in range(len(data))]
+            draw_func(data, colors, f"Moving {data[i]} to sorted position")
+            time.sleep(speed)
+            heapify(data, i, 0)
+        
+        draw_func(data, [THEME["sorted"]] * len(data), "✓ Sorting Complete!")
+
+    def radix_sort(self, data, draw_func, speed):
+        """Radix sort with colorful animation"""
+        def counting_sort_for_radix(arr, exp):
+            n = len(arr)
+            output = [0] * n
+            count = [0] * 10
+            
+            for i in range(n):
+                index = arr[i] // exp
+                count[index % 10] += 1
+            
+            for i in range(1, 10):
+                count[i] += count[i - 1]
+            
+            i = n - 1
+            while i >= 0:
+                index = arr[i] // exp
+                output[count[index % 10] - 1] = arr[i]
+                count[index % 10] -= 1
+                i -= 1
+            
+            for i in range(n):
+                arr[i] = output[i]
+                colors = [THEME["swapping"] if x <= i else THEME["comparing"] for x in range(len(data))]
+                draw_func(data, colors, f"Digit sort: processing position {i}")
+                time.sleep(speed * 0.5)
+        
+        max_val = max(data)
+        exp = 1
+        
+        while max_val // exp > 0:
+            counting_sort_for_radix(data, exp)
+            exp *= 10
+        
+        draw_func(data, [THEME["sorted"]] * len(data), "✓ Sorting Complete!")
+
+    # Search algorithms with enhanced animation
+    def linear_search(self, arr, target, draw_func, speed):
+        """Linear search with colorful animation"""
+        for i in range(len(arr)):
+            colors = [THEME["searching"] if x == i else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [i], f"Checking index {i}: {arr[i]}")
+            time.sleep(speed)
+            
+            if arr[i] == target:
+                colors = [THEME["found"] if x == i else THEME["bg"] for x in range(len(arr))]
+                draw_func(arr, colors, [i], f"✓ FOUND {target} at index {i}!")
+                self.search_status.config(text=f"FOUND {target} AT INDEX {i}")
+                return i
+        
+        colors = [THEME["bg"] for _ in range(len(arr))]
+        draw_func(arr, colors, [], f"✗ {target} not found")
+        self.search_status.config(text=f"{target} NOT FOUND")
+        return -1
+
+    def binary_search(self, arr, target, draw_func, speed):
+        """Binary search with colorful animation"""
+        left, right = 0, len(arr) - 1
+        
+        while left <= right:
+            mid = (left + right) // 2
+            colors = [THEME["searching"] if left <= x <= right else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [left, mid, right], f"Searching range [{left}:{right}], mid={mid}")
+            time.sleep(speed)
+            
+            if arr[mid] == target:
+                colors = [THEME["found"] if x == mid else THEME["bg"] for x in range(len(arr))]
+                draw_func(arr, colors, [mid], f"✓ FOUND {target} at index {mid}!")
+                self.search_status.config(text=f"FOUND {target} AT INDEX {mid}")
+                return mid
+            elif arr[mid] < target:
+                left = mid + 1
+                colors = [THEME["comparing"] if left <= x <= right else THEME["bg"] for x in range(len(arr))]
+                draw_func(arr, colors, [mid], f"Target > {arr[mid]}, search right")
+                time.sleep(speed * 0.7)
+            else:
+                right = mid - 1
+                colors = [THEME["comparing"] if left <= x <= right else THEME["bg"] for x in range(len(arr))]
+                draw_func(arr, colors, [mid], f"Target < {arr[mid]}, search left")
+                time.sleep(speed * 0.7)
+        
+        colors = [THEME["bg"] for _ in range(len(arr))]
+        draw_func(arr, colors, [], f"✗ {target} not found")
+        self.search_status.config(text=f"{target} NOT FOUND")
+        return -1
+
+    def jump_search(self, arr, target, draw_func, speed):
+        """Jump search with colorful animation"""
+        n = len(arr)
+        step = int(math.sqrt(n))
+        prev = 0
+        
+        # Jump through the array
+        while arr[min(step, n) - 1] < target:
+            colors = [THEME["searching"] if prev <= x < min(step, n) else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [min(step, n) - 1], f"Jumping: block [{prev}:{min(step, n)}]")
+            time.sleep(speed)
+            
+            prev = step
+            step += int(math.sqrt(n))
+            if prev >= n:
+                colors = [THEME["bg"] for _ in range(len(arr))]
+                draw_func(arr, colors, [], f"✗ {target} not found")
+                self.search_status.config(text=f"{target} NOT FOUND")
+                return -1
+        
+        # Linear search in the identified block
+        while arr[prev] < target:
+            colors = [THEME["comparing"] if x == prev else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [prev], f"Linear search at index {prev}")
+            time.sleep(speed)
+            
+            prev += 1
+            if prev == min(step, n):
+                colors = [THEME["bg"] for _ in range(len(arr))]
+                draw_func(arr, colors, [], f"✗ {target} not found")
+                self.search_status.config(text=f"{target} NOT FOUND")
+                return -1
+        
+        if arr[prev] == target:
+            colors = [THEME["found"] if x == prev else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [prev], f"✓ FOUND {target} at index {prev}!")
+            self.search_status.config(text=f"FOUND {target} AT INDEX {prev}")
+            return prev
+        
+        colors = [THEME["bg"] for _ in range(len(arr))]
+        draw_func(arr, colors, [], f"✗ {target} not found")
+        self.search_status.config(text=f"{target} NOT FOUND")
+        return -1
+
+    def interpolation_search(self, arr, target, draw_func, speed):
+        """Interpolation search with colorful animation"""
+        left, right = 0, len(arr) - 1
+        
+        while left <= right and arr[left] <= target <= arr[right]:
+            if left == right:
+                if arr[left] == target:
+                    colors = [THEME["found"] if x == left else THEME["bg"] for x in range(len(arr))]
+                    draw_func(arr, colors, [left], f"✓ FOUND {target} at index {left}!")
+                    self.search_status.config(text=f"FOUND {target} AT INDEX {left}")
+                    return left
+                else:
+                    colors = [THEME["bg"] for _ in range(len(arr))]
+                    draw_func(arr, colors, [], f"✗ {target} not found")
+                    self.search_status.config(text=f"{target} NOT FOUND")
+                    return -1
+            
+            # Calculate position using interpolation formula
+            pos = left + int(((target - arr[left]) / (arr[right] - arr[left])) * (right - left))
+            
+            colors = [THEME["searching"] if left <= x <= right else THEME["bg"] for x in range(len(arr))]
+            draw_func(arr, colors, [left, pos, right], f"Interpolating: checking position {pos}")
+            time.sleep(speed)
+            
+            if arr[pos] == target:
+                colors = [THEME["found"] if x == pos else THEME["bg"] for x in range(len(arr))]
+                draw_func(arr, colors, [pos], f"✓ FOUND {target} at index {pos}!")
+                self.search_status.config(text=f"FOUND {target} AT INDEX {pos}")
+                return pos
+            elif arr[pos] < target:
+                left = pos + 1
+            else:
+                right = pos - 1
+        
+        colors = [THEME["bg"] for _ in range(len(arr))]
+        draw_func(arr, colors, [], f"✗ {target} not found")
+        self.search_status.config(text=f"{target} NOT FOUND")
+        return -1
+
+    # Tree operations
+    def setup_tree_tab(self):
+        """Setup the tree operations tab"""
+        main_frame = tk.Frame(self.tree_tab, bg=THEME["bg"])
+        main_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Visualization area
+        viz_frame = tk.Frame(main_frame, bg=THEME["bg"], relief=tk.SOLID, bd=2, 
+                           highlightbackground=THEME["border"], highlightthickness=2)
+        viz_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(20, 10))
+        
+        # Create matplotlib figure for tree
+        self.tree_fig, self.tree_ax = plt.subplots(figsize=(12, 8))
+        self.tree_fig.patch.set_facecolor(THEME["canvas_bg"])
+        self.tree_ax.set_facecolor(THEME["canvas_bg"])
+        self.tree_ax.set_aspect('equal')
+        self.tree_ax.axis('off')
+        
+        self.tree_canvas = FigureCanvasTkAgg(self.tree_fig, viz_frame)
+        self.tree_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        
+        # Controls
+        controls_frame = tk.Frame(main_frame, bg=THEME["bg"])
+        controls_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Tree operations
+        tree_ops_section = tk.LabelFrame(controls_frame, text="TREE OPERATIONS", 
+                                       bg=THEME["bg"], fg=THEME["fg"], 
+                                       font=("Courier", 10, "bold"),
+                                       relief=tk.SOLID, bd=2)
+        tree_ops_section.pack(side=tk.LEFT, padx=(0, 10), fill=tk.Y)
+        
+        tk.Label(tree_ops_section, text="Value:", bg=THEME["bg"], fg=THEME["fg"], 
+                font=("Courier", 9)).grid(row=0, column=0, padx=5, pady=5)
+        self.tree_value_entry = tk.Entry(tree_ops_section, width=15, bg=THEME["bg"], 
+                                       fg=THEME["fg"], font=("Courier", 9), 
+                                       relief=tk.SOLID, bd=2)
+        self.tree_value_entry.grid(row=0, column=1, padx=5, pady=5)
+        
+        tree_buttons = [
+            ("INSERT", self.insert_node),
+            ("DELETE", self.delete_node),
+            ("SEARCH", self.search_tree),
+            ("CLEAR", self.clear_tree)
+        ]
+        
+        for i, (text, command) in enumerate(tree_buttons):
+            self.create_enhanced_button(tree_ops_section, text, command, 8).grid(
+                row=1, column=i, padx=3, pady=5)
+        
+        # Traversal operations
+        traversal_section = tk.LabelFrame(controls_frame, text="TRAVERSALS", 
+                                        bg=THEME["bg"], fg=THEME["fg"], 
+                                        font=("Courier", 10, "bold"),
+                                        relief=tk.SOLID, bd=2)
+        traversal_section.pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        
+        traversal_buttons = [
+            ("INORDER", lambda: self.traverse_tree("inorder")),
+            ("PREORDER", lambda: self.traverse_tree("preorder")),
+            ("POSTORDER", lambda: self.traverse_tree("postorder")),
+            ("LEVEL", lambda: self.traverse_tree("level_order"))
+        ]
+        
+        for i, (text, command) in enumerate(traversal_buttons):
+            self.create_enhanced_button(traversal_section, text, command, 10).grid(
+                row=i//2, column=i%2, padx=3, pady=3)
+        
+        # Tree info
+        info_section = tk.LabelFrame(controls_frame, text="TREE INFO", 
+                                   bg=THEME["bg"], fg=THEME["fg"], 
+                                   font=("Courier", 10, "bold"),
+                                   relief=tk.SOLID, bd=2)
+        info_section.pack(side=tk.RIGHT, padx=(10, 0), fill=tk.Y)
+        
+        self.tree_info_text = tk.Text(info_section, width=30, height=4, bg=THEME["bg"], 
+                                    fg=THEME["fg"], font=("Courier", 8), 
+                                    relief=tk.SOLID, bd=1)
+        self.tree_info_text.pack(padx=5, pady=5)
+        
+        # Status
+        self.tree_status = tk.Label(main_frame, text="READY", bg=THEME["bg"], 
+                                  fg=THEME["fg"], font=("Courier", 9, "bold"), 
+                                  relief=tk.SOLID, bd=2, anchor='w', padx=10)
+        self.tree_status.pack(fill=tk.X, padx=20, pady=(0, 20))
+
+    def insert_node(self):
+        """Insert a node into the binary search tree"""
+        try:
+            value = int(self.tree_value_entry.get())
+            if self.binary_tree is None:
+                self.binary_tree = TreeNode(value)
+            else:
+                self._insert_recursive(self.binary_tree, value)
+            
+            self.draw_tree()
+            self.update_tree_info()
+            self.tree_status.config(text=f"INSERTED {value}")
+            self.tree_value_entry.delete(0, tk.END)
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid integer.")
+
+    def _insert_recursive(self, root, value):
+        """Recursive helper for inserting nodes"""
+        if value < root.value:
+            if root.left is None:
+                root.left = TreeNode(value)
+            else:
+                self._insert_recursive(root.left, value)
+        else:
+            if root.right is None:
+                root.right = TreeNode(value)
+            else:
+                self._insert_recursive(root.right, value)
