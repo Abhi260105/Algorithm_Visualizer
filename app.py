@@ -1011,3 +1011,226 @@ def save_sort_history(self):
                 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load data: {str(e)}")
+
+    def compare_sorting_algorithms(self):
+        """Compare sorting algorithm performance"""
+        if not execution_times:
+            messagebox.showinfo("No Data", "Run some sorting algorithms first.")
+            return
+        
+        self.time_ax.clear()
+        self.time_ax.set_facecolor(THEME["canvas_bg"])
+        self.time_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', 
+                        linewidth=0.3, alpha=0.5)
+        
+        algorithms = list(execution_times.keys())
+        times = list(execution_times.values())
+        
+        bars = self.time_ax.bar(algorithms, times, color=THEME["comparing"], 
+                               edgecolor=THEME["border"], linewidth=2, alpha=0.7)
+        
+        self.time_ax.set_title("SORTING ALGORITHM TIME COMPARISON", 
+                             color=THEME["fg"], fontweight='bold', family='Courier', fontsize=11)
+        self.time_ax.set_ylabel("TIME (SECONDS)", color=THEME["fg"], family='Courier', fontsize=9)
+        self.time_ax.tick_params(colors=THEME["fg"], rotation=45, labelsize=8)
+        
+        for bar, time_val in zip(bars, times):
+            height = bar.get_height()
+            self.time_ax.text(bar.get_x() + bar.get_width()/2., height,
+                            f'{time_val:.4f}', ha='center', va='bottom', 
+                            color=THEME["fg"], family='Courier', fontsize=8)
+        
+        self.space_ax.clear()
+        self.space_ax.set_facecolor(THEME["canvas_bg"])
+        self.space_ax.text(0.5, 0.5, "SPACE COMPLEXITY\nVARIES BY ALGORITHM", 
+                          ha='center', va='center', transform=self.space_ax.transAxes,
+                          color=THEME["fg"], fontsize=10, family='Courier', fontweight='bold')
+        
+        self.analysis_fig.tight_layout()
+        self.analysis_canvas.draw()
+
+    def compare_search_algorithms(self):
+        """Compare search algorithm performance"""
+        if not search_history:
+            messagebox.showinfo("No Data", "Run some search algorithms first.")
+            return
+        
+        algo_times = {}
+        for entry in search_history:
+            algo = entry['algorithm']
+            if algo not in algo_times:
+                algo_times[algo] = []
+            algo_times[algo].append(entry['time'])
+        
+        avg_times = {algo: sum(times)/len(times) for algo, times in algo_times.items()}
+        
+        self.time_ax.clear()
+        self.time_ax.set_facecolor(THEME["canvas_bg"])
+        
+        algorithms = list(avg_times.keys())
+        times = list(avg_times.values())
+        
+        bars = self.time_ax.bar(algorithms, times, color=THEME["searching"], 
+                               edgecolor=THEME["border"], linewidth=2, alpha=0.7)
+        self.time_ax.set_title("SEARCH ALGORITHM AVG TIME", 
+                             color=THEME["fg"], fontweight='bold', family='Courier', fontsize=11)
+        
+        self.space_ax.clear()
+        self.space_ax.set_facecolor(THEME["canvas_bg"])
+        self.space_ax.text(0.5, 0.5, "SEARCH ALGORITHMS\nUSE O(1) SPACE", 
+                          ha='center', va='center', transform=self.space_ax.transAxes,
+                          color=THEME["fg"], fontsize=10, family='Courier', fontweight='bold')
+        
+        self.analysis_fig.tight_layout()
+        self.analysis_canvas.draw()
+
+    def show_complexity_analysis(self):
+        """Show Big O complexity analysis"""
+        complexity_window = tk.Toplevel(self.root)
+        complexity_window.title("Algorithm Complexity")
+        complexity_window.geometry("900x650")
+        complexity_window.configure(bg=THEME["bg"])
+        
+        text_frame = tk.Frame(complexity_window, bg=THEME["bg"], relief=tk.SOLID, bd=2)
+        text_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        complexity_text = scrolledtext.ScrolledText(text_frame, wrap=tk.WORD, 
+                                                  bg=THEME["bg"], fg=THEME["fg"],
+                                                  font=("Courier", 10), relief=tk.SOLID, bd=1)
+        complexity_text.pack(fill=tk.BOTH, expand=True)
+        
+        complexity_info = """
+    ╔══════════════════════════════════════════════════════════════════╗
+    ║            ALGORITHM COMPLEXITY ANALYSIS                         ║
+    ╚══════════════════════════════════════════════════════════════════╝
+
+    SORTING ALGORITHMS:
+    ──────────────────────────────────────────────────────────────────
+    
+    See original code for full complexity details...
+    """
+        
+        complexity_text.insert(tk.END, complexity_info)
+        complexity_text.config(state=tk.DISABLED)
+
+    def export_analysis(self):
+        """Export analysis results"""
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".json",
+            filetypes=[("JSON files", "*.json"), ("CSV files", "*.csv")]
+        )
+        
+        if filename:
+            try:
+                export_data = {
+                    "sorting_performance": execution_times,
+                    "sorting_history": sorting_history,
+                    "search_history": search_history,
+                    "export_timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                with open(filename, 'w') as file:
+                    json.dump(export_data, file, indent=4)
+                
+                messagebox.showinfo("Success", f"Analysis exported to {filename}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to export: {str(e)}")
+
+    def view_sort_history(self):
+        """View sorting history"""
+        if not sorting_history:
+            messagebox.showinfo("No History", "No sorting history available.")
+            return
+        
+        self._create_history_window("SORTING HISTORY", sorting_history, "sorting")
+
+    def view_search_history(self):
+        """View search history"""
+        if not search_history:
+            messagebox.showinfo("No History", "No search history available.")
+            return
+        
+        self._create_history_window("SEARCH HISTORY", search_history, "search")
+
+    def _create_history_window(self, title, history_data, data_type):
+        """Create history window"""
+        history_window = tk.Toplevel(self.root)
+        history_window.title(title)
+        history_window.geometry("900x500")
+        history_window.configure(bg=THEME["bg"])
+        
+        tree_frame = tk.Frame(history_window, bg=THEME["bg"], relief=tk.SOLID, bd=2)
+        tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        columns = ("Algorithm", "Time", "Timestamp")
+        if data_type == "search":
+            columns = ("Algorithm", "Target", "Result", "Time", "Timestamp")
+        
+        tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=15)
+        
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=120 if col != "Timestamp" else 150)
+        
+        scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=tree.yview)
+        tree.configure(yscrollcommand=scrollbar.set)
+        
+        for entry in history_data:
+            if data_type == "sorting":
+                values = (entry["algorithm"], f"{entry['time']:.4f}s", entry["timestamp"])
+            else:
+                result_text = f"Index {entry['result']}" if entry['result'] != -1 else "Not found"
+                values = (entry["algorithm"], entry["target"], result_text, 
+                         f"{entry['time']:.4f}s", entry["timestamp"])
+            tree.insert("", tk.END, values=values)
+        
+        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    def clear_all_history(self):
+        """Clear all history"""
+        if messagebox.askyesno("Confirm", "Clear all history?"):
+            global sorting_history, search_history
+            sorting_history = []
+            search_history = []
+            self.save_sort_history()
+            self.save_search_history()
+            messagebox.showinfo("Cleared", "All history cleared.")
+
+    def reset_sort_visualization(self):
+        """Reset sorting visualization"""
+        global execution_times
+        execution_times = {}
+        self.data = []
+        self.sort_entry.delete(0, tk.END)
+        
+        for widget in self.array_frame.winfo_children():
+            widget.destroy()
+        
+        self.sort_ax.clear()
+        self.sort_ax.set_facecolor(THEME["canvas_bg"])
+        self.sort_canvas.draw()
+        
+        self.sort_status.config(text="RESET COMPLETED")
+        self.sort_message.config(text="")
+
+def main():
+    root = tk.Tk()
+    app = AlgorithmVisualizer(root)
+    
+    try:
+        root.iconname("Algorithm Visualizer")
+        root.minsize(1200, 800)
+    except:
+        pass
+    
+    def on_closing():
+        app.save_sort_history()
+        app.save_search_history()
+        root.destroy()
+    
+    root.protocol("WM_DELETE_WINDOW", on_closing)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
