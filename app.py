@@ -945,3 +945,69 @@ class AlgorithmVisualizer:
                 root.right = TreeNode(value)
             else:
                 self._insert_recursive(root.right, value)
+def save_sort_history(self):
+        """Save sorting history to file"""
+        with open(HISTORY_FILE, "w") as file:
+            json.dump(sorting_history, file, indent=4)
+
+    def save_search_history(self):
+        """Save search history to file"""
+        with open(SEARCH_HISTORY_FILE, "w") as file:
+            json.dump(search_history, file, indent=4)
+
+    def save_sorted_data(self):
+        """Save current sorted data"""
+        if not self.data:
+            messagebox.showwarning("No Data", "No data to save.")
+            return
+        
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("JSON files", "*.json"), ("All files", "*.*")]
+        )
+        
+        if filename:
+            try:
+                if filename.endswith('.csv'):
+                    with open(filename, 'w', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow(['Index', 'Value'])
+                        for i, value in enumerate(self.data):
+                            writer.writerow([i, value])
+                else:
+                    with open(filename, 'w') as file:
+                        json.dump({
+                            "data": self.data,
+                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                        }, file, indent=4)
+                
+                messagebox.showinfo("Success", f"Data saved to {filename}")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to save data: {str(e)}")
+
+    def load_data_from_file(self):
+        """Load data from file"""
+        filename = filedialog.askopenfilename(
+            filetypes=[("CSV files", "*.csv"), ("JSON files", "*.json"), ("All files", "*.*")]
+        )
+        
+        if filename:
+            try:
+                if filename.endswith('.csv'):
+                    with open(filename, 'r') as file:
+                        reader = csv.reader(file)
+                        next(reader)
+                        self.data = [int(row[1]) for row in reader]
+                else:
+                    with open(filename, 'r') as file:
+                        data = json.load(file)
+                        self.data = data.get('data', [])
+                
+                self.sort_entry.delete(0, tk.END)
+                self.sort_entry.insert(0, ','.join(map(str, self.data)))
+                self.draw_sort_data(self.data, [THEME["fg"]] * len(self.data))
+                self.update_array_display(self.data)
+                messagebox.showinfo("Success", f"Data loaded from {filename}")
+                
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to load data: {str(e)}")
