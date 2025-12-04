@@ -25,9 +25,9 @@ THEME = {
     "bg": "#f8f8f6",           # off-white background
     "fg": "#000000",           # pure black text
     "border": "#000000",       # black borders
-    "grid": "#d0d0d0",         # light gray for graph grid
+    "grid": "#b0b0b0",         # darker gray for graph grid
+    "canvas_bg": "#e8e8e6",    # light dark background for graph
     "highlight": "#000000",    # black highlight
-    "canvas_bg": "#f8f8f6",    # off-white canvas
     "comparing": "#FFA500",    # orange for comparing
     "swapping": "#FF6B35",     # red-orange for swapping
     "sorted": "#4CAF50",       # green for sorted
@@ -117,12 +117,13 @@ class AlgorithmVisualizer:
         self.sort_fig.patch.set_facecolor(THEME["canvas_bg"])
         self.sort_ax.set_facecolor(THEME["canvas_bg"])
         
-        # Add graph paper grid
-        self.sort_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
-        self.sort_ax.minorticks_on()
-        self.sort_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
+        # Add 0.5-unit square box grid
+        self.sort_ax.set_axisbelow(True)
+        self.sort_ax.grid(True, which='major', color=THEME["grid"], linestyle='-', linewidth=1, alpha=0.6)
+        self.sort_ax.set_xticks([i * 0.5 for i in range(200)])
+        self.sort_ax.set_yticks([i * 0.5 for i in range(400)])
         
-        self.sort_ax.tick_params(colors=THEME["fg"], which='both')
+        self.sort_ax.tick_params(colors=THEME["fg"], which='both', labelsize=8)
         for spine in self.sort_ax.spines.values():
             spine.set_color(THEME["border"])
             spine.set_linewidth(2)
@@ -234,14 +235,13 @@ class AlgorithmVisualizer:
         self.search_fig.patch.set_facecolor(THEME["canvas_bg"])
         self.search_ax.set_facecolor(THEME["canvas_bg"])
         
-        # Add graph paper grid
-        self.search_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', 
-                          linewidth=0.3, alpha=0.5)
-        self.search_ax.minorticks_on()
-        self.search_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', 
-                          linewidth=0.15, alpha=0.3)
+        # Add 0.5-unit square box grid
+        self.search_ax.set_axisbelow(True)
+        self.search_ax.grid(True, which='major', color=THEME["grid"], linestyle='-', linewidth=1, alpha=0.6)
+        self.search_ax.set_xticks([i * 0.5 for i in range(200)])
+        self.search_ax.set_yticks([i * 0.5 for i in range(400)])
         
-        self.search_ax.tick_params(colors=THEME["fg"], which='both')
+        self.search_ax.tick_params(colors=THEME["fg"], which='both', labelsize=8)
         for spine in self.search_ax.spines.values():
             spine.set_color(THEME["border"])
             spine.set_linewidth(2)
@@ -378,12 +378,11 @@ class AlgorithmVisualizer:
         self.sort_ax.clear()
         self.sort_ax.set_facecolor(THEME["canvas_bg"])
         
-        # Add graph paper grid
-        self.sort_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', 
-                        linewidth=0.3, alpha=0.5)
-        self.sort_ax.minorticks_on()
-        self.sort_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', 
-                        linewidth=0.15, alpha=0.3)
+        # Add 0.5-unit square box grid
+        self.sort_ax.set_axisbelow(True)
+        self.sort_ax.grid(True, which='major', color=THEME["grid"], linestyle='-', linewidth=1, alpha=0.6)
+        self.sort_ax.set_xticks([i * 0.5 for i in range(200)])
+        self.sort_ax.set_yticks([i * 0.5 for i in range(400)])
         
         bars = self.sort_ax.bar(range(len(data)), data, color=colors, 
                                edgecolor=THEME["border"], linewidth=2)
@@ -414,12 +413,11 @@ class AlgorithmVisualizer:
         self.search_ax.clear()
         self.search_ax.set_facecolor(THEME["canvas_bg"])
         
-        # Add graph paper grid
-        self.search_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', 
-                          linewidth=0.3, alpha=0.5)
-        self.search_ax.minorticks_on()
-        self.search_ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', 
-                          linewidth=0.15, alpha=0.3)
+        # Add 0.5-unit square box grid
+        self.search_ax.set_axisbelow(True)
+        self.search_ax.grid(True, which='major', color=THEME["grid"], linestyle='-', linewidth=1, alpha=0.6)
+        self.search_ax.set_xticks([i * 0.5 for i in range(200)])
+        self.search_ax.set_yticks([i * 0.5 for i in range(400)])
         
         bars = self.search_ax.bar(range(len(data)), data, color=colors, 
                                  edgecolor=THEME["border"], linewidth=2)
@@ -478,7 +476,8 @@ class AlgorithmVisualizer:
                            bg=THEME["bg"], fg=THEME["fg"],
                            relief="solid", bd=2, font=("Courier", 10, "bold"))
             label.pack(side="left", padx=3, pady=5)
-# Sorting algorithms with enhanced animation
+
+    # Sorting algorithms with enhanced animation
     def bubble_sort(self, data, draw_func, speed):
         """Bubble sort with colorful animation"""
         n = len(data)
@@ -945,7 +944,8 @@ class AlgorithmVisualizer:
                 root.right = TreeNode(value)
             else:
                 self._insert_recursive(root.right, value)
-def delete_node(self):
+
+    def delete_node(self):
         """Delete a node from the binary search tree"""
         try:
             value = int(self.tree_value_entry.get())
@@ -957,7 +957,7 @@ def delete_node(self):
         except ValueError:
             messagebox.showerror("Invalid Input", "Please enter a valid integer.")
 
-def _delete_recursive(self, root, value):
+    def _delete_recursive(self, root, value):
         """Recursive helper for deleting nodes"""
         if root is None:
             return root
@@ -978,13 +978,13 @@ def _delete_recursive(self, root, value):
         
         return root
 
-def _find_min(self, root):
+    def _find_min(self, root):
         """Find minimum value node in tree"""
         while root.left is not None:
             root = root.left
         return root
 
-def search_tree(self):
+    def search_tree(self):
         """Search for a value in the tree"""
         try:
             value = int(self.tree_value_entry.get())
@@ -997,7 +997,7 @@ def search_tree(self):
         except ValueError:
             messagebox.showerror("Invalid Input", "Please enter a valid integer.")
 
-def _search_recursive(self, root, value):
+    def _search_recursive(self, root, value):
         """Recursive helper for searching nodes"""
         if root is None or root.value == value:
             return root is not None
@@ -1006,14 +1006,14 @@ def _search_recursive(self, root, value):
             return self._search_recursive(root.left, value)
         return self._search_recursive(root.right, value)
 
-def clear_tree(self):
+    def clear_tree(self):
         """Clear the entire tree"""
         self.binary_tree = None
         self.draw_tree()
         self.update_tree_info()
         self.tree_status.config(text="TREE CLEARED")
 
-def draw_tree(self):
+    def draw_tree(self):
         """Draw the binary tree"""
         self.tree_ax.clear()
         self.tree_ax.set_facecolor(THEME["canvas_bg"])
@@ -1032,7 +1032,7 @@ def draw_tree(self):
         
         self.tree_canvas.draw()
 
-def _calculate_positions(self, node, x, y, width, positions):
+    def _calculate_positions(self, node, x, y, width, positions):
         """Calculate positions for tree nodes"""
         if node is not None:
             positions[node] = (x, y)
@@ -1041,7 +1041,7 @@ def _calculate_positions(self, node, x, y, width, positions):
             if node.right:
                 self._calculate_positions(node.right, x + width, y - 1, width / 2, positions)
 
-def _draw_edges(self, node, positions):
+    def _draw_edges(self, node, positions):
         """Draw edges between tree nodes"""
         if node is not None:
             x, y = positions[node]
@@ -1056,7 +1056,7 @@ def _draw_edges(self, node, positions):
                                 linewidth=2, markersize=0)
                 self._draw_edges(node.right, positions)
 
-def _draw_nodes(self, positions):
+    def _draw_nodes(self, positions):
         """Draw tree nodes"""
         for node, (x, y) in positions.items():
             rect = Rectangle((x - 0.25, y - 0.15), 0.5, 0.3, 
@@ -1067,7 +1067,7 @@ def _draw_nodes(self, positions):
             self.tree_ax.text(x, y, str(node.value), ha='center', va='center', 
                             color=THEME["fg"], fontsize=11, fontweight='bold', family='Courier')
 
-def traverse_tree(self, traversal_type):
+    def traverse_tree(self, traversal_type):
         """Perform tree traversal"""
         if self.binary_tree is None:
             self.tree_status.config(text="TREE IS EMPTY")
@@ -1088,25 +1088,25 @@ def traverse_tree(self, traversal_type):
         self.tree_info_text.insert(tk.END, f"{traversal_type.upper()}: {' -> '.join(map(str, result))}")
         self.tree_status.config(text=f"{traversal_type.upper()} COMPLETED")
 
-def _inorder_traversal(self, root, result):
+    def _inorder_traversal(self, root, result):
         if root:
             self._inorder_traversal(root.left, result)
             result.append(root.value)
             self._inorder_traversal(root.right, result)
 
-def _preorder_traversal(self, root, result):
+    def _preorder_traversal(self, root, result):
         if root:
             result.append(root.value)
             self._preorder_traversal(root.left, result)
             self._preorder_traversal(root.right, result)
 
-def _postorder_traversal(self, root, result):
+    def _postorder_traversal(self, root, result):
         if root:
             self._postorder_traversal(root.left, result)
             self._postorder_traversal(root.right, result)
             result.append(root.value)
 
-def _level_order_traversal(self, root, result):
+    def _level_order_traversal(self, root, result):
         if root:
             queue = [root]
             while queue:
@@ -1117,7 +1117,7 @@ def _level_order_traversal(self, root, result):
                 if node.right:
                     queue.append(node.right)
 
-def update_tree_info(self):
+    def update_tree_info(self):
         """Update tree information display"""
         if self.binary_tree is None:
             info = "TREE: EMPTY\nHEIGHT: 0\nNODES: 0"
@@ -1129,20 +1129,20 @@ def update_tree_info(self):
         self.tree_info_text.delete(1.0, tk.END)
         self.tree_info_text.insert(tk.END, info)
 
-def _get_tree_height(self, root):
+    def _get_tree_height(self, root):
         """Get height of tree"""
         if root is None:
             return 0
         return max(self._get_tree_height(root.left), self._get_tree_height(root.right)) + 1
 
-def _count_nodes(self, root):
+    def _count_nodes(self, root):
         """Count nodes in tree"""
         if root is None:
             return 0
         return self._count_nodes(root.left) + self._count_nodes(root.right) + 1
 
     # Algorithm execution methods
-def run_sorting_algorithm(self, algorithm, name):
+    def run_sorting_algorithm(self, algorithm, name):
         """Run a sorting algorithm with timing"""
         if not self.data:
             messagebox.showwarning("No Data", "Please generate data first.")
@@ -1165,7 +1165,7 @@ def run_sorting_algorithm(self, algorithm, name):
         # Save to history
         self.save_to_sort_history(name, self.data.copy(), end_time - start_time)
 
-def run_search_algorithm(self, algorithm, name):
+    def run_search_algorithm(self, algorithm, name):
         """Run a search algorithm"""
         if not self.search_array:
             messagebox.showwarning("No Data", "Please generate search data first.")
@@ -1203,385 +1203,6 @@ def run_search_algorithm(self, algorithm, name):
         self.save_search_history()
 
     # Analysis tab setup
-def setup_analysis_tab(self):
+    def setup_analysis_tab(self):
         """Setup the performance analysis tab"""
-        main_frame = tk.Frame(self.analysis_tab, bg=THEME["bg"])
-        main_frame.pack(fill=tk.BOTH, expand=True)
-        
-        # Analysis visualization
-        viz_frame = tk.Frame(main_frame, bg=THEME["bg"], relief=tk.SOLID, bd=2, 
-                           highlightbackground=THEME["border"], highlightthickness=2)
-        viz_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=(20, 10))
-        
-        self.analysis_fig, (self.time_ax, self.space_ax) = plt.subplots(1, 2, figsize=(14, 6))
-        self.analysis_fig.patch.set_facecolor(THEME["canvas_bg"])
-        
-        for ax in [self.time_ax, self.space_ax]:
-            ax.set_facecolor(THEME["canvas_bg"])
-            ax.grid(True, which='both', color=THEME["grid"], linestyle='-', linewidth=0.3, alpha=0.5)
-            ax.minorticks_on()
-            ax.grid(True, which='minor', color=THEME["grid"], linestyle='-', linewidth=0.15, alpha=0.3)
-            ax.tick_params(colors=THEME["fg"], which='both')
-            for spine in ax.spines.values():
-                spine.set_color(THEME["border"])
-                spine.set_linewidth(2)
-        
-        self.analysis_canvas = FigureCanvasTkAgg(self.analysis_fig, viz_frame)
-        self.analysis_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-        
-        # Controls
-        controls_frame = tk.Frame(main_frame, bg=THEME["bg"])
-        controls_frame.pack(fill=tk.X, padx=20, pady=10)
-        
-        # Analysis buttons
-        analysis_section = tk.LabelFrame(controls_frame, text="PERFORMANCE ANALYSIS", 
-                                       bg=THEME["bg"], fg=THEME["fg"], 
-                                       font=("Courier", 10, "bold"),
-                                       relief=tk.SOLID, bd=2)
-        analysis_section.pack(side=tk.LEFT, padx=(0, 10))
-        
-        analysis_buttons = [
-            ("COMPARE SORT", self.compare_sorting_algorithms),
-            ("COMPARE SEARCH", self.compare_search_algorithms),
-            ("BIG O", self.show_complexity_analysis),
-            ("EXPORT", self.export_analysis)
-        ]
-        
-        for i, (text, command) in enumerate(analysis_buttons):
-            self.create_enhanced_button(analysis_section, text, command, 14).grid(
-                row=i//2, column=i%2, padx=3, pady=3)
-        
-        # History section
-        history_section = tk.LabelFrame(controls_frame, text="HISTORY", 
-                                      bg=THEME["bg"], fg=THEME["fg"], 
-                                      font=("Courier", 10, "bold"),
-                                      relief=tk.SOLID, bd=2)
-        history_section.pack(side=tk.RIGHT, padx=(10, 0))
-        
-        history_buttons = [
-            ("SORT HISTORY", self.view_sort_history),
-            ("SEARCH HISTORY", self.view_search_history),
-            ("CLEAR ALL", self.clear_all_history)
-        ]
-        
-        for i, (text, command) in enumerate(history_buttons):
-            self.create_enhanced_button(history_section, text, command, 14).grid(
-                row=i//2, column=i%2, padx=3, pady=3)
-
-    # History and data management
-def save_to_sort_history(self, algorithm, data, execution_time):
-        """Save sorting result to history"""
-        entry = {
-            "algorithm": algorithm,
-            "data": data,
-            "time": execution_time,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
-        sorting_history.append(entry)
-        self.save_sort_history()
-
-def load_history(self):
-        """Load history from files"""
-        global sorting_history, search_history
-        try:
-            with open(HISTORY_FILE, "r") as file:
-                sorting_history = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            sorting_history = []
-        
-        try:
-            with open(SEARCH_HISTORY_FILE, "r") as file:
-                search_history = json.load(file)
-        except (FileNotFoundError, json.JSONDecodeError):
-            search_history = []
-
-def save_sort_history(self):
-        """Save sorting history to file"""
-        with open(HISTORY_FILE, "w") as file:
-            json.dump(sorting_history, file, indent=4)
-
-def save_search_history(self):
-        """Save search history to file"""
-        with open(SEARCH_HISTORY_FILE, "w") as file:
-            json.dump(search_history, file, indent=4)
-
-def save_sorted_data(self):
-        """Save current sorted data"""
-        if not self.data:
-            messagebox.showwarning("No Data", "No data to save.")
-            return
-        
-        filename = filedialog.asksaveasfilename(
-            defaultextension=".csv",
-            filetypes=[("CSV files", "*.csv"), ("JSON files", "*.json"), ("All files", "*.*")]
-        )
-        
-        if filename:
-            try:
-                if filename.endswith('.csv'):
-                    with open(filename, 'w', newline='') as file:
-                        writer = csv.writer(file)
-                        writer.writerow(['Index', 'Value'])
-                        for i, value in enumerate(self.data):
-                            writer.writerow([i, value])
-                else:
-                    with open(filename, 'w') as file:
-                        json.dump({
-                            "data": self.data,
-                            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                        }, file, indent=4)
-                
-                messagebox.showinfo("Success", f"Data saved to {filename}")
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to save data: {str(e)}")
-
-def load_data_from_file(self):
-        """Load data from file"""
-        filename = filedialog.askopenfilename(
-            filetypes=[("CSV files", "*.csv"), ("JSON files", "*.json"), ("All files", "*.*")]
-        )
-        
-        if filename:
-            try:
-                if filename.endswith('.csv'):
-                    with open(filename, 'r') as file:
-                        reader = csv.reader(file)
-                        next(reader)
-                        self.data = [int(row[1]) for row in reader]
-                else:
-                    with open(filename, 'r') as file:
-                        data = json.load(file)
-                        self.data = data.get('data', [])
-                
-                self.sort_entry.delete(0, tk.END)
-                self.sort_entry.insert(0, ','.join(map(str, self.data)))
-                self.draw_sort_data(self.data, [THEME["fg"]] * len(self.data))
-                self.update_array_display(self.data)
-                messagebox.showinfo("Success", f"Data loaded from {filename}")
-                
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to load data: {str(e)}")
-
-def compare_sorting_algorithms(self):
-        """Compare sorting algorithm performance"""
-        if not execution_times:
-            messagebox.showinfo("No Data", "Run some sorting algorithms first.")
-            return
-        
-        self.time_ax.clear()
-        self.time_ax.set_facecolor(THEME["canvas_bg"])
-        self.time_ax.grid(True, which='both', color=THEME["grid"], linestyle='-', 
-                        linewidth=0.3, alpha=0.5)
-        
-        algorithms = list(execution_times.keys())
-        times = list(execution_times.values())
-        
-        bars = self.time_ax.bar(algorithms, times, color=THEME["comparing"], 
-                               edgecolor=THEME["border"], linewidth=2, alpha=0.7)
-        
-        self.time_ax.set_title("SORTING ALGORITHM TIME COMPARISON", 
-                             color=THEME["fg"], fontweight='bold', family='Courier', fontsize=11)
-        self.time_ax.set_ylabel("TIME (SECONDS)", color=THEME["fg"], family='Courier', fontsize=9)
-        self.time_ax.tick_params(colors=THEME["fg"], rotation=45, labelsize=8)
-        
-        for bar, time_val in zip(bars, times):
-            height = bar.get_height()
-            self.time_ax.text(bar.get_x() + bar.get_width()/2., height,
-                            f'{time_val:.4f}', ha='center', va='bottom', 
-                            color=THEME["fg"], family='Courier', fontsize=8)
-        
-        self.space_ax.clear()
-        self.space_ax.set_facecolor(THEME["canvas_bg"])
-        self.space_ax.text(0.5, 0.5, "SPACE COMPLEXITY\nVARIES BY ALGORITHM", 
-                          ha='center', va='center', transform=self.space_ax.transAxes,
-                          color=THEME["fg"], fontsize=10, family='Courier', fontweight='bold')
-        
-        self.analysis_fig.tight_layout()
-        self.analysis_canvas.draw()
-
-def compare_search_algorithms(self):
-        """Compare search algorithm performance"""
-        if not search_history:
-            messagebox.showinfo("No Data", "Run some search algorithms first.")
-            return
-        
-        algo_times = {}
-        for entry in search_history:
-            algo = entry['algorithm']
-            if algo not in algo_times:
-                algo_times[algo] = []
-            algo_times[algo].append(entry['time'])
-        
-        avg_times = {algo: sum(times)/len(times) for algo, times in algo_times.items()}
-        
-        self.time_ax.clear()
-        self.time_ax.set_facecolor(THEME["canvas_bg"])
-        
-        algorithms = list(avg_times.keys())
-        times = list(avg_times.values())
-        
-        bars = self.time_ax.bar(algorithms, times, color=THEME["searching"], 
-                               edgecolor=THEME["border"], linewidth=2, alpha=0.7)
-        self.time_ax.set_title("SEARCH ALGORITHM AVG TIME", 
-                             color=THEME["fg"], fontweight='bold', family='Courier', fontsize=11)
-        
-        self.space_ax.clear()
-        self.space_ax.set_facecolor(THEME["canvas_bg"])
-        self.space_ax.text(0.5, 0.5, "SEARCH ALGORITHMS\nUSE O(1) SPACE", 
-                          ha='center', va='center', transform=self.space_ax.transAxes,
-                          color=THEME["fg"], fontsize=10, family='Courier', fontweight='bold')
-        
-        self.analysis_fig.tight_layout()
-        self.analysis_canvas.draw()
-
-def show_complexity_analysis(self):
-        """Show Big O complexity analysis"""
-        complexity_window = tk.Toplevel(self.root)
-        complexity_window.title("Algorithm Complexity")
-        complexity_window.geometry("900x650")
-        complexity_window.configure(bg=THEME["bg"])
-        
-        text_frame = tk.Frame(complexity_window, bg=THEME["bg"], relief=tk.SOLID, bd=2)
-        text_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        complexity_text = scrolledtext.ScrolledText(text_frame, wrap=tk.WORD, 
-                                                  bg=THEME["bg"], fg=THEME["fg"],
-                                                  font=("Courier", 10), relief=tk.SOLID, bd=1)
-        complexity_text.pack(fill=tk.BOTH, expand=True)
-        
-        complexity_info = """
-    ╔══════════════════════════════════════════════════════════════════╗
-    ║            ALGORITHM COMPLEXITY ANALYSIS                         ║
-    ╚══════════════════════════════════════════════════════════════════╝
-
-    SORTING ALGORITHMS:
-    ──────────────────────────────────────────────────────────────────
-    
-    See original code for full complexity details...
-    """
-        
-        complexity_text.insert(tk.END, complexity_info)
-        complexity_text.config(state=tk.DISABLED)
-
-def export_analysis(self):
-        """Export analysis results"""
-        filename = filedialog.asksaveasfilename(
-            defaultextension=".json",
-            filetypes=[("JSON files", "*.json"), ("CSV files", "*.csv")]
-        )
-        
-        if filename:
-            try:
-                export_data = {
-                    "sorting_performance": execution_times,
-                    "sorting_history": sorting_history,
-                    "search_history": search_history,
-                    "export_timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                }
-                
-                with open(filename, 'w') as file:
-                    json.dump(export_data, file, indent=4)
-                
-                messagebox.showinfo("Success", f"Analysis exported to {filename}")
-            except Exception as e:
-                messagebox.showerror("Error", f"Failed to export: {str(e)}")
-
-def view_sort_history(self):
-        """View sorting history"""
-        if not sorting_history:
-            messagebox.showinfo("No History", "No sorting history available.")
-            return
-        
-        self._create_history_window("SORTING HISTORY", sorting_history, "sorting")
-
-def view_search_history(self):
-        """View search history"""
-        if not search_history:
-            messagebox.showinfo("No History", "No search history available.")
-            return
-        
-        self._create_history_window("SEARCH HISTORY", search_history, "search")
-
-
-def _create_history_window(self, title, history_data, data_type):
-        """Create history window"""
-        history_window = tk.Toplevel(self.root)
-        history_window.title(title)
-        history_window.geometry("900x500")
-        history_window.configure(bg=THEME["bg"])
-        
-        tree_frame = tk.Frame(history_window, bg=THEME["bg"], relief=tk.SOLID, bd=2)
-        tree_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
-        
-        columns = ("Algorithm", "Time", "Timestamp")
-        if data_type == "search":
-            columns = ("Algorithm", "Target", "Result", "Time", "Timestamp")
-        
-        tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=15)
-        
-        for col in columns:
-            tree.heading(col, text=col)
-            tree.column(col, width=120 if col != "Timestamp" else 150)
-        
-        scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=tree.yview)
-        tree.configure(yscrollcommand=scrollbar.set)
-        
-        for entry in history_data:
-            if data_type == "sorting":
-                values = (entry["algorithm"], f"{entry['time']:.4f}s", entry["timestamp"])
-            else:
-                result_text = f"Index {entry['result']}" if entry['result'] != -1 else "Not found"
-                values = (entry["algorithm"], entry["target"], result_text, 
-                         f"{entry['time']:.4f}s", entry["timestamp"])
-            tree.insert("", tk.END, values=values)
-        
-        tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-def clear_all_history(self):
-        """Clear all history"""
-        if messagebox.askyesno("Confirm", "Clear all history?"):
-            global sorting_history, search_history
-            sorting_history = []
-            search_history = []
-            self.save_sort_history()
-            self.save_search_history()
-            messagebox.showinfo("Cleared", "All history cleared.")
-
-def reset_sort_visualization(self):
-        """Reset sorting visualization"""
-        global execution_times
-        execution_times = {}
-        self.data = []
-        self.sort_entry.delete(0, tk.END)
-        
-        for widget in self.array_frame.winfo_children():
-            widget.destroy()
-        
-        self.sort_ax.clear()
-        self.sort_ax.set_facecolor(THEME["canvas_bg"])
-        self.sort_canvas.draw()
-        
-        self.sort_status.config(text="RESET COMPLETED")
-        self.sort_message.config(text="")
-
-def main():
-    root = tk.Tk()
-    app = AlgorithmVisualizer(root)
-    
-    try:
-        root.iconname("Algorithm Visualizer")
-        root.minsize(1200, 800)
-    except:
-        pass
-    
-    def on_closing():
-        app.save_sort_history()
-        app.save_search_history()
-        root.destroy()
-    
-    root.protocol("WM_DELETE_WINDOW", on_closing)
-    root.mainloop()
-
-if __name__ == "__main__":
-    main()
+        main_frame = tk.Frame(self.analysis
