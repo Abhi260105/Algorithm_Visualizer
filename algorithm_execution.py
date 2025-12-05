@@ -8,7 +8,7 @@ from tkinter import messagebox
 from typing import Callable, List
 from core_algorithms import AlgorithmEvent
 from ui_rendering import AnimationPlayer
-
+from ui_rendering import AnimationPlayer, THEME
 
 class AlgorithmExecutor:
     """Handles algorithm execution with timing and history"""
