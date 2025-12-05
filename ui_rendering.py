@@ -30,13 +30,13 @@ THEME = {
 
 
 class GraphPaperBackground:
-    """Static graph paper background generator - 1cm square boxes"""
+    """Static graph paper background generator - larger grid cells for clarity"""
     
     @staticmethod
     def create_background(ax, width: int = 100, height: int = 100):
         """
         Create a static graph paper background
-        1cm square boxes with neutral colors
+        Larger grid cells (5 units) for better readability
         
         Args:
             ax: matplotlib axis object
@@ -46,19 +46,19 @@ class GraphPaperBackground:
         # Set background color
         ax.set_facecolor(THEME["canvas_bg"])
         
-        # Configure grid - 1cm square boxes
+        # Configure grid - larger 5-unit cells for clarity
         ax.set_axisbelow(True)  # Grid behind all content
         
-        # Major grid lines (1 unit = 1cm)
+        # Major grid lines (5 units per cell = larger, clearer grid)
         ax.grid(True, which='major', 
                 color=THEME["grid"], 
                 linestyle='-', 
-                linewidth=0.8, 
-                alpha=0.5)
+                linewidth=1.2, 
+                alpha=0.4)
         
-        # Set tick positions for 1cm squares
-        ax.set_xticks(np.arange(0, width, 1))
-        ax.set_yticks(np.arange(0, height, 1))
+        # Set tick positions for larger grid cells (every 5 units)
+        ax.set_xticks(np.arange(0, width, 5))
+        ax.set_yticks(np.arange(0, height, 5))
         
         # Hide tick labels to keep it clean
         ax.set_xticklabels([])
@@ -99,7 +99,8 @@ class LayeredRenderer:
     def draw_bars(self, data: List[int], colors: List[str], 
                   edgecolor: str = None, linewidth: int = 2):
         """
-        Layer 1: Draw bar chart elements
+        Layer 1: Draw bar chart elements with inner padding
+        Bars have margins for cleaner look (candle-style)
         
         Args:
             data: list of values
@@ -113,8 +114,11 @@ class LayeredRenderer:
         n = len(data)
         x = range(n)
         
-        # Draw bars
-        bars = self.ax.bar(x, data, color=colors, 
+        # Draw bars with reduced width for padding (0.7 instead of default 0.8)
+        # This creates clean spacing between bars
+        bars = self.ax.bar(x, data, 
+                          width=0.7,  # 30% padding (0.15 on each side)
+                          color=colors, 
                           edgecolor=edgecolor or THEME["border"],
                           linewidth=linewidth,
                           zorder=2)  # Above grid, below highlights
@@ -130,6 +134,7 @@ class LayeredRenderer:
                       highlight_color: str = None):
         """
         Layer 2: Add highlight rectangles over specific bars
+        Adjusted for bar padding (matches 0.7 width)
         
         Args:
             indices: list of indices to highlight
@@ -140,9 +145,10 @@ class LayeredRenderer:
         
         for idx in indices:
             if 0 <= idx < data_length:
-                # Draw highlight rectangle
+                # Draw highlight rectangle matching bar width (0.7)
+                # Centered at idx with 0.35 on each side
                 rect = Rectangle(
-                    (idx - 0.4, 0), 0.8, 1,
+                    (idx - 0.35, 0), 0.7, 1,
                     transform=self.ax.get_xaxis_transform(),
                     facecolor=color,
                     alpha=0.3,
