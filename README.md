@@ -14,9 +14,7 @@
 [Features](#-key-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
 
 ---
-
-C:\Users\priya\Downloads\Algorithm Visualizer - Enhanced 2025-12-26 15-58-34.mp4
-ffmpeg -i "Algorithm Visualizer - Enhanced 2025-12-26 15-58-34.mp4" -vf "fps=10,scale=800:-1" demo.gif
+[Demo Animation](https://via.placeholder.com/800x400/ffffff/4CAF50?text=Algorithm+Visualizer+with+Graph+Paper+Background)
 
 
 *Real-time visualization with graph paper background and GREEN highlight animations*
