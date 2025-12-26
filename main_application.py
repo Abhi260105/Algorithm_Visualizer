@@ -10,6 +10,8 @@ import time
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from datetime import datetime
+import warnings
+warnings.filterwarnings("ignore", message="findfont:")
 
 # Import core modules
 from core_algorithms import AlgorithmCore, SearchCore, EventType
