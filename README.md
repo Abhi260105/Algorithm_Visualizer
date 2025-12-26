@@ -15,7 +15,9 @@
 
 ---
 
-![Demo Animation](https://via.placeholder.com/800x400/ffffff/4CAF50?text=Algorithm+Visualizer+with+Graph+Paper+Background)
+C:\Users\priya\Downloads\Algorithm Visualizer - Enhanced 2025-12-26 15-58-34.mp4
+ffmpeg -i "Algorithm Visualizer - Enhanced 2025-12-26 15-58-34.mp4" -vf "fps=10,scale=800:-1" demo.gif
+
 
 *Real-time visualization with graph paper background and GREEN highlight animations*
 
