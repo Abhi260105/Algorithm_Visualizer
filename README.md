@@ -14,7 +14,7 @@
 [Features](#-key-features) • [Installation](#-installation) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
 
 ---
-[Demo Animation](https://via.placeholder.com/800x400/ffffff/4CAF50?text=Algorithm+Visualizer+with+Graph+Paper+Background)
+[Demo Animation](https://github.com/Abhi260105/Algorithm_Visualizer/blob/main/demo.mp4)
 
 
 *Real-time visualization with graph paper background and GREEN highlight animations*
